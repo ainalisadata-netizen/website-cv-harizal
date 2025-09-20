@@ -1,16 +1,19 @@
-// server.js (Versi MongoDB)
+// server.js (Versi Final dengan Perbaikan)
 
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
-const mongoose = require('mongoose'); // <-- Menggunakan Mongoose untuk database
+const mongoose = require('mongoose');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Render akan menggunakan port-nya sendiri
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+
+// Melayani file statis dari folder 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- KONEKSI KE DATABASE MONGODB ---
 const mongoUri = process.env.MONGO_CONNECTION_STRING;
@@ -21,7 +24,6 @@ mongoose.connect(mongoUri)
 
 // --- STRUKTUR DATA (SCHEMA) UNTUK CV DI DATABASE ---
 const cvSchema = new mongoose.Schema({
-  // Kita buat satu dokumen saja untuk menyimpan semua data CV
   uniqueId: { type: String, default: "main_cv", unique: true },
   personalInfo: Object,
   education: Array,
@@ -31,7 +33,6 @@ const cvSchema = new mongoose.Schema({
   projects: Object,
 });
 
-// Membuat "Model" yang akan digunakan untuk berinteraksi dengan database
 const CvData = mongoose.model('CvData', cvSchema);
 
 
@@ -55,7 +56,6 @@ function generateOTP() {
 }
 
 app.post('/login', async (req, res) => {
-  // ... (Logika login tidak berubah, biarkan sama)
   try {
     const { username } = req.body;
     if (username.toLowerCase() !== 'harizal') {
@@ -78,7 +78,6 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/verify', (req, res) => {
-    // ... (Logika verifikasi tidak berubah, biarkan sama)
     try {
         const { otp } = req.body;
         if (!currentOTP || (Date.now() - otpTimestamp > OTP_VALIDITY_MS)) {
@@ -103,15 +102,23 @@ app.post('/verify', (req, res) => {
 // GET /get-data (Mengambil data dari MongoDB)
 app.get('/get-data', async (req, res) => {
   try {
-    // Cari satu dokumen CV di database
     let data = await CvData.findOne({ uniqueId: "main_cv" });
+    
+    // Jika tidak ada data sama sekali di database, buat dokumen kosong.
     if (!data) {
-        // Jika database kosong, kita buat data awal dari file data.json
-        console.log("Database is empty. Initializing with data.json...");
-        const initialData = require('./data.json'); // Membaca file lokal sekali saja
-        data = new CvData({ ...initialData, uniqueId: "main_cv" });
+        console.log("Database is empty. Creating a new empty document.");
+        data = new CvData({ 
+            uniqueId: "main_cv",
+            personalInfo: { name: "", title: "", address: "", email: "" },
+            education: [],
+            workExperience: [],
+            certifications: [],
+            trainings: [],
+            projects: { it: [], network_infrastructure: [], security: [] }
+        });
         await data.save();
     }
+    
     return res.json(data);
   } catch (error) {
     console.error('Error in /get-data:', error);
@@ -132,11 +139,13 @@ app.post('/update-data', async (req, res) => {
   }
 });
 
-// --- MELAYANI FILE FRONTEND ---
-// Tambahkan ini untuk melayani file dari folder 'public'
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Menangani semua rute lain agar mengarah ke index.html (untuk single page app)
+// Menangani rute halaman admin secara eksplisit
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Menangani semua rute lain agar mengarah ke index.html
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
