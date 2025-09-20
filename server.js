@@ -64,7 +64,7 @@ app.post('/login', async (req, res) => {
     currentOTP = generateOTP();
     otpTimestamp = Date.now();
     const mailOptions = {
-      from: `"Harizal CV Admin" <${process.env.EMAIL_USER}>`,
+      from: '"Harizal CV Admin" <ainalisadata@gmail.com>', // Gunakan email yang terverifikasi di Brevo
       to: 'harizalbanget@gmail.com',
       subject: 'Your OTP for Harizal CV Admin Panel',
       text: `Your one-time password (OTP) is: ${currentOTP}\n\nThis OTP is valid for 5 minutes.`,
