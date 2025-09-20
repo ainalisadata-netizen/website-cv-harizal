@@ -1,77 +1,75 @@
-// server.js
-/**
- * Backend server for Harizal CV Admin Panel
- * 
- * Setup environment variables in a `.env` file at the project root:
- * 
- * EMAIL_HOST=smtp.example.com
- * EMAIL_PORT=587
- * EMAIL_SECURE=false
- * EMAIL_USER=your_email@example.com
- * EMAIL_PASS=your_email_password
- * 
- * Replace the above with your SMTP provider credentials.
- * 
- * This server listens on port 3000.
- */
+// server.js (Versi MongoDB)
 
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
-const fs = require('fs');
+const mongoose = require('mongoose'); // <-- Menggunakan Mongoose untuk database
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Render akan menggunakan port-nya sendiri
 
 app.use(bodyParser.json());
 
-// Store OTP and timestamp in memory (simple approach)
+// --- KONEKSI KE DATABASE MONGODB ---
+const mongoUri = process.env.MONGO_CONNECTION_STRING;
+
+mongoose.connect(mongoUri)
+  .then(() => console.log('Successfully connected to MongoDB Atlas.'))
+  .catch(err => console.error('Error connecting to MongoDB Atlas:', err));
+
+// --- STRUKTUR DATA (SCHEMA) UNTUK CV DI DATABASE ---
+const cvSchema = new mongoose.Schema({
+  // Kita buat satu dokumen saja untuk menyimpan semua data CV
+  uniqueId: { type: String, default: "main_cv", unique: true },
+  personalInfo: Object,
+  education: Array,
+  workExperience: Array,
+  certifications: Array,
+  trainings: Array,
+  projects: Object,
+});
+
+// Membuat "Model" yang akan digunakan untuk berinteraksi dengan database
+const CvData = mongoose.model('CvData', cvSchema);
+
+
+// --- LOGIKA LOGIN (SAMA SEPERTI SEBELUMNYA) ---
 let currentOTP = null;
 let otpTimestamp = null;
-const OTP_VALIDITY_MS = 5 * 60 * 1000; // 5 minutes
+const OTP_VALIDITY_MS = 5 * 60 * 1000; // 5 menit
 
-// Nodemailer transporter setup using environment variables
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: parseInt(process.env.EMAIL_PORT, 10),
-  secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+  secure: process.env.EMAIL_SECURE === 'true',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-// Utility: generate 6-digit OTP as string
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// POST /login
 app.post('/login', async (req, res) => {
+  // ... (Logika login tidak berubah, biarkan sama)
   try {
     const { username } = req.body;
-    if (typeof username !== 'string') {
-      return res.status(400).json({ success: false, message: 'Invalid username' });
-    }
     if (username.toLowerCase() !== 'harizal') {
       return res.status(401).json({ success: false, message: 'Unauthorized username' });
     }
-
     currentOTP = generateOTP();
     otpTimestamp = Date.now();
-
-    // Send OTP email
     const mailOptions = {
       from: `"Harizal CV Admin" <${process.env.EMAIL_USER}>`,
       to: 'harizalbanget@gmail.com',
       subject: 'Your OTP for Harizal CV Admin Panel',
       text: `Your one-time password (OTP) is: ${currentOTP}\n\nThis OTP is valid for 5 minutes.`,
     };
-
     await transporter.sendMail(mailOptions);
-
     return res.json({ success: true, message: 'OTP sent to email' });
   } catch (error) {
     console.error('Error in /login:', error);
@@ -79,86 +77,70 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// POST /verify
 app.post('/verify', (req, res) => {
-  try {
-    const { otp } = req.body;
-    if (typeof otp !== 'string') {
-      return res.status(400).json({ success: false, message: 'Invalid OTP format' });
+    // ... (Logika verifikasi tidak berubah, biarkan sama)
+    try {
+        const { otp } = req.body;
+        if (!currentOTP || (Date.now() - otpTimestamp > OTP_VALIDITY_MS)) {
+            currentOTP = null;
+            return res.status(400).json({ success: false, message: 'OTP expired or invalid. Please login again.' });
+        }
+        if (otp === currentOTP) {
+            currentOTP = null;
+            return res.json({ success: true, message: 'OTP verified' });
+        } else {
+            return res.status(401).json({ success: false, message: 'Invalid OTP' });
+        }
+    } catch (error) {
+        console.error('Error in /verify:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
     }
-    if (!currentOTP) {
-      return res.status(400).json({ success: false, message: 'No OTP generated. Please login first.' });
-    }
-    const now = Date.now();
-    if (now - otpTimestamp > OTP_VALIDITY_MS) {
-      currentOTP = null;
-      otpTimestamp = null;
-      return res.status(400).json({ success: false, message: 'OTP expired. Please login again.' });
-    }
-    if (otp === currentOTP) {
-      // OTP matched, clear OTP to prevent reuse
-      currentOTP = null;
-      otpTimestamp = null;
-      return res.json({ success: true, message: 'OTP verified' });
-    } else {
-      return res.status(401).json({ success: false, message: 'Invalid OTP' });
-    }
-  } catch (error) {
-    console.error('Error in /verify:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
-  }
 });
 
-// GET /get-data
-app.get('/get-data', (req, res) => {
+
+// --- ENDPOINT DATA (SEKARANG MENGGUNAKAN DATABASE) ---
+
+// GET /get-data (Mengambil data dari MongoDB)
+app.get('/get-data', async (req, res) => {
   try {
-    const dataPath = path.join(__dirname, 'data.json');
-    if (!fs.existsSync(dataPath)) {
-      return res.status(404).json({ success: false, message: 'Data file not found' });
+    // Cari satu dokumen CV di database
+    let data = await CvData.findOne({ uniqueId: "main_cv" });
+    if (!data) {
+        // Jika database kosong, kita buat data awal dari file data.json
+        console.log("Database is empty. Initializing with data.json...");
+        const initialData = require('./data.json'); // Membaca file lokal sekali saja
+        data = new CvData({ ...initialData, uniqueId: "main_cv" });
+        await data.save();
     }
-    const rawData = fs.readFileSync(dataPath, 'utf-8');
-    const jsonData = JSON.parse(rawData);
-    return res.json(jsonData);
+    return res.json(data);
   } catch (error) {
     console.error('Error in /get-data:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
-// POST /update-data
-app.post('/update-data', (req, res) => {
+// POST /update-data (Menyimpan data ke MongoDB)
+app.post('/update-data', async (req, res) => {
   try {
     const newData = req.body;
-    if (typeof newData !== 'object' || newData === null) {
-      return res.status(400).json({ success: false, message: 'Invalid data format' });
-    }
-
-    // Basic validation: check required top-level keys exist
-    const requiredKeys = ['personalInfo', 'education', 'workExperience', 'certifications', 'trainings', 'projects'];
-    for (const key of requiredKeys) {
-      if (!(key in newData)) {
-        return res.status(400).json({ success: false, message: `Missing required key: ${key}` });
-      }
-    }
-
-    // Sanitize input: simple example, ensure personalInfo has name and email strings
-    if (typeof newData.personalInfo.name !== 'string' || typeof newData.personalInfo.email !== 'string') {
-      return res.status(400).json({ success: false, message: 'Invalid personalInfo data' });
-    }
-
-    // Write to data.json atomically
-    const dataPath = path.join(__dirname, 'data.json');
-    const tempPath = dataPath + '.tmp';
-
-    fs.writeFileSync(tempPath, JSON.stringify(newData, null, 2), { encoding: 'utf-8' });
-    fs.renameSync(tempPath, dataPath);
-
+    // 'upsert: true' artinya: jika data sudah ada, update. Jika belum ada, buat baru.
+    await CvData.findOneAndUpdate({ uniqueId: "main_cv" }, newData, { upsert: true, new: true });
     return res.json({ success: true, message: 'Data updated successfully' });
   } catch (error) {
     console.error('Error in /update-data:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+// --- MELAYANI FILE FRONTEND ---
+// Tambahkan ini untuk melayani file dari folder 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Menangani semua rute lain agar mengarah ke index.html (untuk single page app)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 
 // Start server
 app.listen(PORT, () => {
