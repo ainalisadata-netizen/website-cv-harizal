@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Harizal - IT Consultant & Cyber Security Analyst</title>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #eee;
+      scroll-behavior: smooth;
+    }
+    a {
+      color: #1e90ff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    section {
+      padding: 60px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      margin-bottom: 0.5em;
+      font-weight: 700;
+    }
+    h1 {
+      font-size: 3rem;
+    }
+    h2 {
+      font-size: 2rem;
+      border-bottom: 2px solid #1e90ff;
+      padding-bottom: 0.3em;
+      margin-bottom: 1em;
+    }
+    p {
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      margin-bottom: 0.5em;
+    }
+    /* Hero Section */
+    #hero {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #1e1e1e, #121212);
+    }
+    #hero canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    #hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      padding: 0 20px;
+    }
+    #hero h1 {
+      font-size: 4rem;
+      margin-bottom: 0.2em;
+      color: #1e90ff;
+      text-shadow: 0 0 10px #1e90ff;
+    }
+    #hero h3 {
+      font-weight: 400;
+      font-size: 1.5rem;
+      margin-bottom: 1.5em;
+      color: #ccc;
+    }
+    #hero button {
+      background-color: #1e90ff;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #hero button:hover {
+      background-color: #0f5bb5;
+    }
+    /* Sections */
+    .section-content {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
+    }
+    /* Work Experience & Education & Certifications & Trainings */
+    .item {
+      margin-bottom: 1em;
+    }
+    .item-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #1e90ff;
+    }
+    .item-subtitle {
+      font-style: italic;
+      color: #aaa;
+      margin-bottom: 0.3em;
+    }
+    /* Projects categories */
+    .project-category {
+      margin-bottom: 1.5em;
+    }
+    .project-category h4 {
+      color: #1e90ff;
+      margin-bottom: 0.5em;
+    }
+    /* Contact */
+    #contact a {
+      display: inline-block;
+      margin-right: 20px;
+      font-size: 1.3rem;
+      color: #1e90ff;
+    }
+    #contact a:hover {
+      color: #63b3ed;
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+      #hero h1 {
+        font-size: 2.5rem;
+      }
+      #hero h3 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="hero">
+    <canvas id="hero-bg"></canvas>
+    <div id="hero-content" data-aos="fade-up" data-aos-duration="1500">
+      <h1 id="name">Harizal</h1>
+      <h3 id="title">IT Consultant | Cyber Security Analyst</h3>
+      <button id="download-cv">Download CV</button>
+    </div>
+  </section>
+
+  <section id="about" data-aos="fade-up" data-aos-duration="1000">
+    <h2>About Me</h2>
+    <div class="section-content" id="about-content">
+      <!-- Loaded dynamically -->
+    </div>
+  </section>
+
+  <section id="work-experience" data-aos="fade-up" data-aos-duration="1000">
+    <h2>Work Experience</h2>
+    <div class="section-content" id="work-experience-content">
+      <!-- Loaded dynamically -->
+    </div>
+  </section>
+
+  <section id="projects" data-aos="fade-up" data-aos-duration="1000">
+    <h2>Projects</h2>
+    <div class="section-content" id="projects-content">
+      <!-- Loaded dynamically -->
+    </div>
+  </section>
+
+  <section id="education" data-aos="fade-up" data-aos-duration="1000">
+    <h2>Education</h2>
+    <div class="section-content" id="education-content">
+      <!-- Loaded dynamically -->
+    </div>
+  </section>
+
+  <section id="certifications" data-aos="fade-up" data-aos-duration="1000">
+    <h2>Certifications & Training</h2>
+    <div class="section-content" id="certifications-content">
+      <h3>Certifications</h3>
+      <ul id="certifications-list"></ul>
+      <h3>Trainings</h3>
+      <ul id="trainings-list"></ul>
+    </div>
+  </section>
+
+  <section id="contact" data-aos="fade-up" data-aos-duration="1000">
+    <h2>Contact</h2>
+    <div class="section-content">
+      <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link">harizalbanget@gmail.com</a></p>
+      <p>
+        <a href="https://linkedin.com/in/harizal" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a> |
+        <a href="https://github.com/harizal" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+
+    // Subtle animated background for hero using Canvas (simple moving dots)
+    const canvas = document.getElementById('hero-bg');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let dots = [];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    class Dot {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.radius = Math.random() * 1.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+      }
+      move() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > width) this.speedX *= -1;
+        if (this.y < 0 || this.y > height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(30,144,255,0.6)';
+        ctx.fill();
+      }
+    }
+
+    function initDots() {
+      dots = [];
+      for (let i = 0; i < 100; i++) {
+        dots.push(new Dot());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      dots.forEach(dot => {
+        dot.move();
+        dot.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+      resize();
+      initDots();
+    });
+
+    resize();
+    initDots();
+    animate();
+
+    // Load data.json and populate sections
+    async function loadData() {
+      try {
+        const res = await fetch('data.json');
+        if (!res.ok) throw new Error('Failed to load data.json');
+        const data = await res.json();
+
+        // Hero
+        document.getElementById('name').textContent = data.personalInfo.name;
+        document.getElementById('title').textContent = data.personalInfo.title;
+
+        // About Me - use address and email as a brief summary
+        const aboutContent = document.getElementById('about-content');
+        aboutContent.innerHTML = `
+          <p><strong>Address:</strong> ${data.personalInfo.address}</p>
+          <p><strong>Email:</strong> <a href="mailto:${data.personalInfo.email}">${data.personalInfo.email}</a></p>
+          <p>I am an experienced IT Consultant and Cyber Security Analyst with a strong background in IT consulting, network infrastructure, and security projects. Passionate about leveraging technology to solve complex problems and improve organizational security.</p>
+        `;
+
+        // Work Experience
+        const workContainer = document.getElementById('work-experience-content');
+        workContainer.innerHTML = '';
+        data.workExperience.forEach(exp => {
+          const div = document.createElement('div');
+          div.classList.add('item');
+          div.innerHTML = `
+            <div class="item-title">${exp.position}</div>
+            <div class="item-subtitle">${exp.company} | ${exp.period}</div>
+          `;
+          workContainer.appendChild(div);
+        });
+
+        // Projects
+        const projectsContainer = document.getElementById('projects-content');
+        projectsContainer.innerHTML = '';
+
+        const createProjectCategory = (title, items) => {
+          const catDiv = document.createElement('div');
+          catDiv.classList.add('project-category');
+          const h4 = document.createElement('h4');
+          h4.textContent = title;
+          catDiv.appendChild(h4);
+          const ul = document.createElement('ul');
+          items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            ul.appendChild(li);
+          });
+          catDiv.appendChild(ul);
+          return catDiv;
+        };
+
+        projectsContainer.appendChild(createProjectCategory('IT', data.projects.it));
+        projectsContainer.appendChild(createProjectCategory('Networking & Infrastructure', data.projects.network_infrastructure));
+        projectsContainer.appendChild(createProjectCategory('Security', data.projects.security));
+
+        // Education
+        const educationContainer = document.getElementById('education-content');
+        educationContainer.innerHTML = '';
+        data.education.forEach(edu => {
+          const div = document.createElement('div');
+          div.classList.add('item');
+          div.innerHTML = `
+            <div class="item-title">${edu.degree}</div>
+            <div class="item-subtitle">${edu.institution} | ${edu.status}</div>
+          `;
+          educationContainer.appendChild(div);
+        });
+
+        // Certifications & Trainings
+        const certList = document.getElementById('certifications-list');
+        certList.innerHTML = '';
+        data.certifications.forEach(cert => {
+          const li = document.createElement('li');
+          li.textContent = cert;
+          certList.appendChild(li);
+        });
+
+        const trainingList = document.getElementById('trainings-list');
+        trainingList.innerHTML = '';
+        data.trainings.forEach(training => {
+          const li = document.createElement('li');
+          li.textContent = training;
+          trainingList.appendChild(li);
+        });
+
+        // Contact links
+        document.getElementById('email-link').href = `mailto:${data.personalInfo.email}`;
+        // LinkedIn and GitHub placeholders already set in HTML
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    }
+
+    loadData();
+
+    // Download CV button - downloads data.json as a file (simple approach)
+    document.getElementById('download-cv').addEventListener('click', () => {
+      fetch('data.json')
+        .then(res => res.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Harizal_CV.json';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        });
+    });
+  </script>
+</body>
+</html>

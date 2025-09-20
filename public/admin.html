@@ -1,0 +1,40 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel - Harizal CV</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <h1>Harizal CV Admin Panel</h1>
+
+  <div id="login-section">
+    <form id="username-form">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required autocomplete="off" />
+      <button type="submit">Send OTP</button>
+    </form>
+  </div>
+
+  <div id="otp-section" style="display:none;">
+    <form id="otp-form">
+      <label for="otp">Enter OTP:</label>
+      <input type="text" id="otp" name="otp" maxlength="6" pattern="\d{6}" required autocomplete="off" />
+      <button type="submit">Verify OTP</button>
+    </form>
+  </div>
+
+  <div id="editor-section" style="display:none;">
+    <form id="editor-form">
+      <div id="form-content"></div>
+      <button type="submit" id="save-btn">Save Changes</button>
+    </form>
+  </div>
+
+  <div id="message" role="alert" aria-live="polite"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
