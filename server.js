@@ -1,4 +1,4 @@
-// server.js (Versi Final dengan Perbaikan)
+// server.js (Versi Final dengan Debugging Detail)
 
 require('dotenv').config();
 const express = require('express');
@@ -11,8 +11,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-
-// Melayani file statis dari folder 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- KONEKSI KE DATABASE MONGODB ---
@@ -35,11 +33,10 @@ const cvSchema = new mongoose.Schema({
 
 const CvData = mongoose.model('CvData', cvSchema);
 
-
-// --- LOGIKA LOGIN (SAMA SEPERTI SEBELUMNYA) ---
+// --- LOGIKA LOGIN ---
 let currentOTP = null;
 let otpTimestamp = null;
-const OTP_VALIDITY_MS = 5 * 60 * 1000; // 5 menit
+const OTP_VALIDITY_MS = 5 * 60 * 1000;
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -64,15 +61,19 @@ app.post('/login', async (req, res) => {
     currentOTP = generateOTP();
     otpTimestamp = Date.now();
     const mailOptions = {
-      from: '"Harizal CV Admin" <ainalisadata@gmail.com>', // Gunakan email yang terverifikasi di Brevo
+      from: `"Harizal CV Admin" <ainalisadata@gmail.com>`, // Menggunakan email terverifikasi
       to: 'harizalbanget@gmail.com',
       subject: 'Your OTP for Harizal CV Admin Panel',
       text: `Your one-time password (OTP) is: ${currentOTP}\n\nThis OTP is valid for 5 minutes.`,
     };
+    console.log("Mencoba mengirim email..."); // Log tambahan
     await transporter.sendMail(mailOptions);
+    console.log("Perintah kirim email berhasil dijalankan."); // Log tambahan
     return res.json({ success: true, message: 'OTP sent to email' });
   } catch (error) {
-    console.error('Error in /login:', error);
+    // *** BAGIAN INI DIUBAH UNTUK MENAMPILKAN DETAIL ERROR ***
+    console.error('!!! TERJADI ERROR SAAT LOGIN !!!');
+    console.error(error); // Cetak seluruh objek error
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
@@ -96,29 +97,20 @@ app.post('/verify', (req, res) => {
     }
 });
 
-
-// --- ENDPOINT DATA (SEKARANG MENGGUNAKAN DATABASE) ---
-
-// GET /get-data (Mengambil data dari MongoDB)
+// --- ENDPOINT DATA ---
 app.get('/get-data', async (req, res) => {
   try {
     let data = await CvData.findOne({ uniqueId: "main_cv" });
-    
-    // Jika tidak ada data sama sekali di database, buat dokumen kosong.
     if (!data) {
         console.log("Database is empty. Creating a new empty document.");
-        data = new CvData({ 
+        data = new CvData({
             uniqueId: "main_cv",
-            personalInfo: { name: "", title: "", address: "", email: "" },
-            education: [],
-            workExperience: [],
-            certifications: [],
-            trainings: [],
+            personalInfo: { name: "Harizal", title: "IT Consultant", address: "", email: "" },
+            education: [], workExperience: [], certifications: [], trainings: [],
             projects: { it: [], network_infrastructure: [], security: [] }
         });
         await data.save();
     }
-    
     return res.json(data);
   } catch (error) {
     console.error('Error in /get-data:', error);
@@ -126,11 +118,9 @@ app.get('/get-data', async (req, res) => {
   }
 });
 
-// POST /update-data (Menyimpan data ke MongoDB)
 app.post('/update-data', async (req, res) => {
   try {
     const newData = req.body;
-    // 'upsert: true' artinya: jika data sudah ada, update. Jika belum ada, buat baru.
     await CvData.findOneAndUpdate({ uniqueId: "main_cv" }, newData, { upsert: true, new: true });
     return res.json({ success: true, message: 'Data updated successfully' });
   } catch (error) {
@@ -139,17 +129,10 @@ app.post('/update-data', async (req, res) => {
   }
 });
 
-
-// Menangani rute halaman admin secara eksplisit
-app.get('/admin.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
-// Menangani semua rute lain agar mengarah ke index.html
+// --- SERVE FRONTEND ---
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
 
 // Start server
 app.listen(PORT, () => {
