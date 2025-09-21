@@ -1,4 +1,4 @@
-// server.js (Final Version with CV Request Database)
+// server.js (Final Version with Route Order Fix)
 
 require('dotenv').config();
 const express = require('express');
@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const validator = require('validator');
 const rateLimit = require('express-rate-limit');
 
@@ -17,7 +18,6 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // --- KONEKSI KE DATABASE MONGODB ---
 const mongoUri = process.env.MONGO_CONNECTION_STRING;
@@ -45,7 +45,6 @@ const cvSchema = new mongoose.Schema({
 });
 const CvData = mongoose.model('CvData', cvSchema);
 
-// SKEMA BARU UNTUK PERMINTAAN CV
 const CvRequestSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
@@ -81,12 +80,11 @@ createFirstAdmin();
 const apiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: "Too many login attempts." });
 
-
 // =======================================================
-// === RUTE API ===
+// === RUTE API (Ditempatkan sebelum static files) ===
 // =======================================================
 
-// === ENDPOINT PUBLIK ===
+// ENDPOINT PUBLIK
 app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
         let data = await CvData.findOne({ uniqueId: "main_cv" }).lean();
@@ -100,7 +98,6 @@ app.get('/get-data', apiLimiter, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 
-// ENDPOINT KONTAK BARU: MENYIMPAN KE DATABASE
 app.post('/contact-request', apiLimiter, async (req, res, next) => {
     try {
         const { name, email, company, message } = req.body;
@@ -113,8 +110,7 @@ app.post('/contact-request', apiLimiter, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 
-
-// === ENDPOINT ADMIN ===
+// ENDPOINT ADMIN
 app.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -130,7 +126,6 @@ app.post('/login', loginLimiter, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 
-// MIDDLEWARE AUTENTIKASI
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -142,7 +137,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// ENDPOINT AMAN: MEMPERBARUI DATA CV
 app.post('/update-data', authenticateToken, async (req, res, next) => {
     try {
         const newData = req.body;
@@ -151,15 +145,13 @@ app.post('/update-data', authenticateToken, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 
-// ENDPOINT AMAN BARU: MENGAMBIL SEMUA PERMINTAAN CV
 app.get('/get-requests', authenticateToken, async (req, res, next) => {
     try {
-        const requests = await CvRequest.find().sort({ createdAt: -1 }); // Diurutkan dari yang terbaru
+        const requests = await CvRequest.find().sort({ createdAt: -1 });
         res.json(requests);
     } catch (error) { next(error); }
 });
 
-// ENDPOINT AMAN BARU: MENGHAPUS PERMINTAAN CV
 app.delete('/delete-request/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -174,6 +166,8 @@ app.delete('/delete-request/:id', authenticateToken, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 
+// --- MENYAJIKAN FILE STATIS DARI FOLDER 'public' ---
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- RUTE CATCH-ALL (HARUS PALING BAWAH) ---
 app.get('*', (req, res) => {
