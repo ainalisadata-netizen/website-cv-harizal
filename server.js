@@ -82,7 +82,8 @@ const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: "To
 // =======================================================
 // === RUTE API (Ditempatkan sebelum static files) ===
 // =======================================================
-// ... (semua endpoint API Anda: /get-data, /login, dll. tetap sama) ...
+
+// ENDPOINT PUBLIK
 app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
         let data = await CvData.findOne({ uniqueId: "main_cv" }).lean();
@@ -95,6 +96,7 @@ app.get('/get-data', apiLimiter, async (req, res, next) => {
         return res.json(data);
     } catch (error) { next(error); }
 });
+
 app.post('/contact-request', apiLimiter, async (req, res, next) => {
     try {
         const { name, email, company, message } = req.body;
@@ -106,6 +108,8 @@ app.post('/contact-request', apiLimiter, async (req, res, next) => {
         return res.json({ success: true, message: 'Permintaan berhasil disimpan.' });
     } catch (error) { next(error); }
 });
+
+// ENDPOINT ADMIN
 app.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -120,6 +124,7 @@ app.post('/login', loginLimiter, async (req, res, next) => {
         res.json({ success: true, message: 'Login successful', token: token });
     } catch (error) { next(error); }
 });
+
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -130,6 +135,7 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
+
 app.post('/update-data', authenticateToken, async (req, res, next) => {
     try {
         const newData = req.body;
@@ -137,12 +143,14 @@ app.post('/update-data', authenticateToken, async (req, res, next) => {
         return res.json({ success: true, message: 'Data updated successfully' });
     } catch (error) { next(error); }
 });
+
 app.get('/get-requests', authenticateToken, async (req, res, next) => {
     try {
         const requests = await CvRequest.find().sort({ createdAt: -1 });
         res.json(requests);
     } catch (error) { next(error); }
 });
+
 app.delete('/delete-request/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
