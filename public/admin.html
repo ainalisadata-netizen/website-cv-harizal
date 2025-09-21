@@ -19,11 +19,25 @@
     </form>
   </div>
 
-  <div id="editor-section" style="display:none;">
-    <form id="editor-form">
-      <div id="form-content"></div>
-      <button type="submit" id="save-btn">Save Changes</button>
-    </form>
+  <div id="main-admin-panel" style="display:none;">
+    <nav class="admin-nav">
+        <button id="nav-editor-btn" class="active">CV Editor</button>
+        <button id="nav-inbox-btn">Inbox</button>
+        <button id="logout-btn">Logout</button>
+    </nav>
+
+    <div id="editor-section">
+        <form id="editor-form">
+          <div id="form-content"></div>
+          <button type="submit" id="save-btn">Save Changes</button>
+        </form>
+    </div>
+
+    <div id="inbox-section" style="display:none;">
+        <h2>CV Requests Inbox</h2>
+        <div id="inbox-content">
+            </div>
+    </div>
   </div>
 
   <div id="message" role="alert" aria-live="polite"></div>
