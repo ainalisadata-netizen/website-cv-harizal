@@ -46,7 +46,7 @@ const apiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: "Too many login attempts." });
 
 // =======================================================
-// === RUTE API (HARUS DIDEFINISIKAN SEBELUM STATIC FILES) ===
+// === RUTE API (Ditempatkan sebelum static files) ===
 // =======================================================
 
 // === ENDPOINT PUBLIK ===
