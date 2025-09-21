@@ -1,9 +1,12 @@
-// src/App.js
-import './App.css';
-import React, { useEffect, useState } from 'react';
+// src/App.js (Final dengan Animasi Partikel Interaktif)
+import React, { useEffect, useState, useCallback } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { loadSlim } from 'tsparticles-slim'; // Use tsparticles-slim for smaller bundle size
+import Particles from "react-tsparticles";
+import { loadFull } from "tsparticles";
+
+import './App.css';
+import './index.css';
 
 import Hero from './components/Hero';
 import About from './components/About';
@@ -20,91 +23,95 @@ function App() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
-    AOS.init({ once: true });
-
-    // Initialize tsParticles
-    const initParticles = async () => {
-      await loadSlim(tsParticles); // Use loadSlim for smaller bundle
-      await tsParticles.load({
-        id: "tsparticles",
-        options: {
-          particles: {
-            number: {
-              value: 80,
-              density: {
-                enable: true,
-                area: 800
-              }
-            },
-            color: {
-              value: ["#2EB67D", "#ECB22E", "#E01E5B", "#36C5F0"]
-            },
-            shape: {
-              type: "circle"
-            },
-            opacity: {
-              value: 1
-            },
-            size: {
-              value: { min: 1, max: 8 }
-            },
-            links: {
-              enable: true,
-              distance: 150,
-              color: "#808080",
-              opacity: 0.4,
-              width: 1
-            },
-            move: {
-              enable: true,
-              speed: 5,
-              direction: "none",
-              random: false,
-              straight: false,
-              outModes: "out"
-            }
-          },
-          interactivity: {
-            events: {
-              onHover: {
-                enable: true,
-                mode: "grab"
-              },
-              onClick: {
-                enable: true,
-                mode: "push"
-              }
-            },
-            modes: {
-              grab: {
-                distance: 140,
-                links: {
-                  opacity: 1
-                }
-              },
-              push: {
-                quantity: 4
-              }
-            }
-          },
-          detectRetina: true,
-          fpsLimit: 120,
-        },
-      });
-    };
-
-    initParticles();
+    AOS.init({ once: true, duration: 1000 });
   }, []);
+
+  const particlesInit = useCallback(async (engine) => {
+    // Inisialisasi tsparticles engine
+    await loadFull(engine);
+  }, []);
+
+  const particleOptions = {
+      background: {
+          color: {
+              value: "#121212"
+          }
+      },
+      fpsLimit: 120,
+      interactivity: {
+          events: {
+              onClick: {
+                  enable: true,
+                  mode: "push"
+              },
+              onHover: {
+                  enable: true,
+                  mode: "repulse"
+              }
+          },
+          modes: {
+              push: {
+                  quantity: 4
+              },
+              repulse: {
+                  distance: 200,
+                  duration: 0.4
+              }
+          }
+      },
+      particles: {
+          color: {
+              value: "#1e90ff"
+          },
+          links: {
+              color: "#1e90ff",
+              distance: 150,
+              enable: true,
+              opacity: 0.2,
+              width: 1
+          },
+          move: {
+              direction: "none",
+              enable: true,
+              outModes: {
+                  default: "bounce"
+              },
+              random: false,
+              speed: 2,
+              straight: false
+          },
+          number: {
+              density: {
+                  enable: true,
+              },
+              value: 80
+          },
+          opacity: {
+              value: 0.3
+          },
+          shape: {
+              type: "circle"
+          },
+          size: {
+              value: { min: 1, max: 5 }
+          }
+      },
+      detectRetina: true
+  };
 
   if (loading) return <div className="loading-screen">Loading portfolio...</div>;
   if (error) return <div className="error-screen">Error: {error.message}</div>;
-  if (!data) return null; // Or a loading state
+  if (!data) return null;
 
   const { personalInfo, workExperience, projects, education, certifications, trainings } = data;
 
   return (
     <>
-      <div id="tsparticles" aria-hidden="true"></div>
+      <Particles
+          id="tsparticles"
+          init={particlesInit}
+          options={particleOptions}
+      />
 
       <Hero
         name={personalInfo?.name || 'Nama Tidak Tersedia'}
@@ -114,7 +121,7 @@ function App() {
 
       <main>
         <About
-          aboutP1="Experienced IT professional..."
+          aboutP1="Experienced IT professional with a strong background in consulting, network infrastructure, and security projects. Passionate about leveraging technology to solve complex problems and improve organizational security."
           address={personalInfo?.address || 'Tidak Tersedia'}
         />
         <WorkExperience experiences={workExperience || []} />
