@@ -1,4 +1,4 @@
-// server.js (Versi Final dengan Perbaikan Data & Animasi)
+// server.js (Versi Final dengan Perbaikan Urutan Rute)
 
 require('dotenv').config();
 const express = require('express');
@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer'); // Ditambahkan kembali untuk form kontak
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -55,7 +55,7 @@ async function createFirstAdmin() {
 }
 createFirstAdmin();
 
-// --- TRANSPORTER EMAIL (UNTUK FORM KONTAK) ---
+// --- TRANSPORTER EMAIL ---
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT, 10),
@@ -67,9 +67,12 @@ const transporter = nodemailer.createTransport({
 });
 
 
+// =======================================================
+// === SEMUA RUTE API HARUS DITEMPATKAN DI ATAS CATCH-ALL ===
+// =======================================================
+
 // === ENDPOINT PUBLIK (TIDAK PERLU LOGIN) ===
 
-// Endpoint untuk mengambil data CV, bisa diakses oleh siapa saja
 app.get('/get-data', async (req, res) => {
     try {
         let data = await CvData.findOne({ uniqueId: "main_cv" });
@@ -89,7 +92,6 @@ app.get('/get-data', async (req, res) => {
     }
 });
 
-// Endpoint untuk form kontak
 app.post('/contact-request', async (req, res) => {
     try {
         const { name, email, company, message } = req.body;
@@ -100,7 +102,7 @@ app.post('/contact-request', async (req, res) => {
             from: `"Notifikasi Website CV" <${process.env.EMAIL_USER}>`,
             to: 'harizalbanget@gmail.com',
             subject: `Permintaan CV dari ${name}`,
-            replyTo: email, // Memudahkan membalas email
+            replyTo: email,
             html: `<h3>Permintaan CV Baru</h3><p><strong>Nama:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Perusahaan:</strong> ${company}</p><hr><p><strong>Pesan:</strong></p><p>${message}</p>`
         };
         await transporter.sendMail(mailOptions);
@@ -114,7 +116,6 @@ app.post('/contact-request', async (req, res) => {
 
 // === ENDPOINT ADMIN (PERLU LOGIN & TOKEN) ===
 
-// Endpoint login admin
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -137,7 +138,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Middleware untuk verifikasi token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -149,7 +149,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Endpoint untuk menyimpan data (diamankan)
 app.post('/update-data', authenticateToken, async (req, res) => {
     try {
         const newData = req.body;
@@ -161,7 +160,8 @@ app.post('/update-data', authenticateToken, async (req, res) => {
     }
 });
 
-// --- SERVE FRONTEND ---
+// --- RUTE CATCH-ALL (HARUS PALING BAWAH) ---
+// Ini akan menangani semua permintaan yang tidak cocok dengan rute API di atas
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
