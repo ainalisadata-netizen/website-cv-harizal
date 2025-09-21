@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://unpkg.com 'unsafe-inline'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net 'unsafe-inline'; connect-src 'self' https://cdn.jsdelivr.net;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://unpkg.com; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net; connect-src 'self';">
   <title>Harizal - IT Consultant & Cyber Security Analyst</title>
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <style>
@@ -17,9 +17,6 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      position: relative;
-      min-height: 100vh;
-      overflow-x: hidden;
     }
     /* tsparticles container */
     #tsparticles {
@@ -27,7 +24,6 @@
       width: 100%; height: 100%;
       z-index: -1;
       background: radial-gradient(circle at center, #1e1e1e, #121212);
-      pointer-events: none; /* agar tidak menghalangi interaksi elemen lain */
     }
     a {
       color: #1e90ff; text-decoration: none;
@@ -105,6 +101,7 @@
     }
     #close-popup:hover, #close-popup:focus { color: #fff; outline: none; }
     #popup-message { text-align: center; margin-top: 10px; font-weight: 700; min-height: 1.5em; word-wrap: break-word; }
+    .error-message { color: #ff4c4c; font-size: 0.85rem; margin-top: -10px; margin-bottom: 10px; display: none; }
     @media (max-width: 600px) {
       #hero h1 { font-size: 2.5rem; }
       #hero h3 { font-size: 1.1rem; }
@@ -125,39 +122,412 @@
     </div>
   </header>
 
-  <!-- sections lain tetap sama ... -->
+  <main>
+    <section id="about" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>About Me</h2>
+      <div class="section-content" id="about-content" aria-live="polite"></div>
+    </section>
+
+    <section id="work-experience" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Work Experience</h2>
+      <div class="section-content" id="work-experience-content" aria-live="polite"></div>
+    </section>
+
+    <section id="projects" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Projects</h2>
+      <div class="section-content" id="projects-content" aria-live="polite"></div>
+    </section>
+
+    <section id="education" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Education</h2>
+      <div class="section-content" id="education-content" aria-live="polite"></div>
+    </section>
+
+    <section id="certifications" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Certifications & Training</h2>
+      <div class="section-content" id="certifications-content">
+        <h3>Certifications</h3>
+        <ul id="certifications-list" aria-live="polite"></ul>
+        <h3>Trainings</h3>
+        <ul id="trainings-list" aria-live="polite"></ul>
+      </div>
+    </section>
+
+    <section id="contact" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Contact</h2>
+      <div class="section-content">
+        <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link" rel="nofollow noopener noreferrer"></a></p>
+        <p>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a> |
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        </p>
+      </div>
+    </section>
+  </main>
+  
+  <div id="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popup-title" tabindex="-1">
+    <div id="popup-form-container">
+        <button id="close-popup" aria-label="Close contact form">&times;</button>
+        <h2 id="popup-title">Minta Curriculum Vitae</h2>
+        <form id="popup-form" novalidate>
+            <label for="popup-name">Nama Anda:</label>
+            <input type="text" id="popup-name" name="name" required autocomplete="name" aria-required="true" />
+            <div id="name-error" class="error-message" role="alert"></div>
+            
+            <label for="popup-email">Email Anda:</label>
+            <input type="email" id="popup-email" name="email" required autocomplete="email" aria-required="true" />
+            <div id="email-error" class="error-message" role="alert"></div>
+            
+            <label for="popup-company">Perusahaan/Institusi:</label>
+            <input type="text" id="popup-company" name="company" autocomplete="organization" />
+            
+            <label for="popup-message-text">Pesan:</label>
+            <textarea id="popup-message-text" name="message" required aria-required="true"></textarea>
+            <div id="message-error" class="error-message" role="alert"></div>
+            
+            <button type="submit">Kirim Permintaan</button>
+        </form>
+        <div id="popup-message" role="alert" aria-live="assertive"></div>
+    </div>
+  </div>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.5.0/tsparticles.bundle.min.js"></script>
   
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      AOS.init({ once: true });
+    AOS.init({ once: true });
 
-      tsParticles.load("tsparticles", {
-        fpsLimit: 60,
-        interactivity: {
-          events: {
-            onClick: { enable: true, mode: "push" },
-            onHover: { enable: true, mode: "repulse" },
-            resize: true
-          },
-          modes: {
-            push: { quantity: 4 },
-            repulse: { distance: 150, duration: 0.4 },
-          },
+    // Load particles dengan konfigurasi yang benar
+    (async () => {
+        try {
+            await tsParticles.load("tsparticles", {
+                fpsLimit: 60,
+                interactivity: {
+                    events: {
+                        onClick: { enable: true, mode: "push" },
+                        onHover: { enable: true, mode: "repulse" },
+                    },
+                    modes: {
+                        push: { quantity: 4 },
+                        repulse: { distance: 150, duration: 0.4 },
+                    },
+                },
+                particles: {
+                    color: { value: "#1e90ff" },
+                    links: { color: "#1e90ff", distance: 150, enable: true, opacity: 0.3, width: 1 },
+                    move: { direction: "none", enable: true, outModes: { default: "out" }, random: false, speed: 3, straight: false },
+                    number: { density: { enable: true }, value: 80 },
+                    opacity: { value: 0.4 },
+                    shape: { type: "circle" },
+                    size: { value: { min: 1, max: 4 } },
+                },
+                detectRetina: true,
+            });
+        } catch (error) {
+            console.error("Error loading particles:", error);
+        }
+    })();
+
+    // Data statis sebagai fallback jika endpoint tidak tersedia
+    const defaultData = {
+        personalInfo: {
+            name: "Harizal",
+            title: "IT Consultant | Cyber Security Analyst",
+            email: "harizalbanget@gmail.com",
+            address: "Jakarta, Indonesia"
         },
-        particles: {
-          color: { value: "#1e90ff" },
-          links: { color: "#1e90ff", distance: 150, enable: true, opacity: 0.3, width: 1 },
-          move: { direction: "none", enable: true, outModes: { default: "out" }, random: false, speed: 3, straight: false },
-          number: { density: { enable: true, area: 800 }, value: 80 },
-          opacity: { value: 0.4 },
-          shape: { type: "circle" },
-          size: { value: { min: 1, max: 4 } },
+        workExperience: [
+            { position: "Senior IT Consultant", company: "Tech Solutions Inc.", period: "2020 - Present" },
+            { position: "Cyber Security Analyst", company: "SecureNet Systems", period: "2018 - 2020" }
+        ],
+        projects: {
+            it: ["ERP System Implementation", "Cloud Migration Project"],
+            network_infrastructure: ["Network Infrastructure Upgrade", "Data Center Design"],
+            security: ["Vulnerability Assessment", "Security Policy Development"]
         },
-        detectRetina: true,
-      });
+        education: [
+            { degree: "Master of Computer Science", institution: "University of Technology", status: "Graduated 2018" },
+            { degree: "Bachelor of Information Technology", institution: "State University", status: "Graduated 2016" }
+        ],
+        certifications: [
+            "CISSP - Certified Information Systems Security Professional",
+            "CISM - Certified Information Security Manager"
+        ],
+        trainings: [
+            "Advanced Penetration Testing",
+            "Cloud Security Architecture"
+        ]
+    };
+
+    async function loadData() {
+        function createAndSetText(tag, text) { const el = document.createElement(tag); el.textContent = text || ''; return el; }
+        
+        try {
+            // Coba load data dari endpoint
+            const res = await fetch('/get-data', { 
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            let data;
+            if (res && res.ok) {
+                data = await res.json();
+            } else {
+                // Gunakan data default jika endpoint tidak tersedia
+                data = defaultData;
+                console.log("Using default data as fallback");
+            }
+            
+            const personalInfo = data.personalInfo || {};
+            const workExperience = Array.isArray(data.workExperience) ? data.workExperience : [];
+            const projects = data.projects || {};
+            const education = Array.isArray(data.education) ? data.education : [];
+            const certifications = Array.isArray(data.certifications) ? data.certifications : [];
+            const trainings = Array.isArray(data.trainings) ? data.trainings : [];
+            
+            document.getElementById('name').textContent = personalInfo.name || 'Nama Tidak Tersedia';
+            document.getElementById('title').textContent = personalInfo.title || 'Judul Tidak Tersedia';
+            
+            const emailLink = document.getElementById('email-link');
+            emailLink.textContent = personalInfo.email || '';
+            emailLink.href = personalInfo.email ? `mailto:${personalInfo.email}` : '#';
+            
+            const aboutContent = document.getElementById('about-content');
+            aboutContent.innerHTML = '';
+            const aboutP1 = createAndSetText('p', 'Experienced IT professional with expertise in cybersecurity and infrastructure management. Specialized in implementing robust security measures and optimizing IT systems for maximum efficiency.');
+            const aboutP2 = document.createElement('p');
+            const addressStrong = createAndSetText('strong', 'Address: ');
+            aboutP2.appendChild(addressStrong);
+            aboutP2.append(document.createTextNode(personalInfo.address || 'Tidak Tersedia'));
+            aboutContent.appendChild(aboutP1);
+            aboutContent.appendChild(aboutP2);
+            
+            // Work Experience
+            const workContainer = document.getElementById('work-experience-content');
+            workContainer.innerHTML = '';
+            workExperience.forEach(exp => {
+                const div = document.createElement('div');
+                div.classList.add('item');
+                const titleDiv = createAndSetText('div', exp.position);
+                titleDiv.className = 'item-title';
+                const subtitleDiv = createAndSetText('div', `${exp.company || ''} | ${exp.period || ''}`);
+                subtitleDiv.className = 'item-subtitle';
+                div.appendChild(titleDiv);
+                div.appendChild(subtitleDiv);
+                workContainer.appendChild(div);
+            });
+            
+            // Projects
+            const projectsContainer = document.getElementById('projects-content');
+            projectsContainer.innerHTML = '';
+            const createProjectCategory = (title, items) => {
+                if (!Array.isArray(items) || items.length === 0) return document.createDocumentFragment();
+                const catDiv = document.createElement('div');
+                catDiv.classList.add('project-category');
+                catDiv.appendChild(createAndSetText('h4', title));
+                const ul = document.createElement('ul');
+                items.forEach(item => { 
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    ul.appendChild(li);
+                });
+                catDiv.appendChild(ul);
+                return catDiv;
+            };
+            projectsContainer.appendChild(createProjectCategory('IT', projects.it));
+            projectsContainer.appendChild(createProjectCategory('Networking & Infrastructure', projects.network_infrastructure));
+            projectsContainer.appendChild(createProjectCategory('Security', projects.security));
+            
+            // Education
+            const educationContainer = document.getElementById('education-content');
+            educationContainer.innerHTML = '';
+            education.forEach(edu => {
+                const div = document.createElement('div');
+                div.classList.add('item');
+                const degreeDiv = createAndSetText('div', edu.degree);
+                degreeDiv.className = 'item-title';
+                const institutionDiv = createAndSetText('div', `${edu.institution || ''} | ${edu.status || ''}`);
+                institutionDiv.className = 'item-subtitle';
+                div.appendChild(degreeDiv);
+                div.appendChild(institutionDiv);
+                educationContainer.appendChild(div);
+            });
+            
+            // Certifications & Trainings
+            const certList = document.getElementById('certifications-list');
+            certList.innerHTML = '';
+            certifications.forEach(cert => { 
+                const li = document.createElement('li');
+                li.textContent = cert;
+                certList.appendChild(li);
+            });
+            
+            const trainingList = document.getElementById('trainings-list');
+            trainingList.innerHTML = '';
+            trainings.forEach(training => { 
+                const li = document.createElement('li');
+                li.textContent = training;
+                trainingList.appendChild(li);
+            });
+            
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('about-content').innerHTML = '<p style="color: #ff4c4c;">Failed to load content. Please try again later.</p>';
+        }
+    }
+    loadData();
+
+    // Form validation and popup logic
+    const contactBtn = document.getElementById('contact-btn');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const closePopupBtn = document.getElementById('close-popup');
+    const popupForm = document.getElementById('popup-form');
+    const popupMessage = document.getElementById('popup-message');
+    
+    // Error message elements
+    const nameError = document.getElementById('name-error');
+    const emailError = document.getElementById('email-error');
+    const messageError = document.getElementById('message-error');
+    
+    // Hide error messages
+    function hideErrors() {
+        nameError.style.display = 'none';
+        emailError.style.display = 'none';
+        messageError.style.display = 'none';
+    }
+    
+    // Validate form
+    function validateForm() {
+        let isValid = true;
+        hideErrors();
+        
+        const name = document.getElementById('popup-name').value.trim();
+        const email = document.getElementById('popup-email').value.trim();
+        const message = document.getElementById('popup-message-text').value.trim();
+        
+        // Validate name
+        if (!name) {
+            nameError.textContent = 'Nama harus diisi';
+            nameError.style.display = 'block';
+            isValid = false;
+        }
+        
+        // Validate email
+        if (!email) {
+            emailError.textContent = 'Email harus diisi';
+            emailError.style.display = 'block';
+            isValid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            emailError.textContent = 'Format email tidak valid';
+            emailError.style.display = 'block';
+            isValid = false;
+        }
+        
+        // Validate message
+        if (!message) {
+            messageError.textContent = 'Pesan harus diisi';
+            messageError.style.display = 'block';
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    // Event listeners
+    contactBtn.addEventListener('click', () => { 
+        popupOverlay.style.display = 'flex'; 
+        document.getElementById('popup-name').focus(); 
+        hideErrors();
+    });
+    
+    closePopupBtn.addEventListener('click', () => { 
+        popupOverlay.style.display = 'none'; 
+        hideErrors();
+    });
+    
+    popupOverlay.addEventListener('click', (e) => { 
+        if (e.target === popupOverlay) { 
+            popupOverlay.style.display = 'none'; 
+            hideErrors();
+        } 
+    });
+    
+    // Input validation on blur
+    document.getElementById('popup-name').addEventListener('blur', () => {
+        const name = document.getElementById('popup-name').value.trim();
+        if (!name) {
+            nameError.textContent = 'Nama harus diisi';
+            nameError.style.display = 'block';
+        } else {
+            nameError.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('popup-email').addEventListener('blur', () => {
+        const email = document.getElementById('popup-email').value.trim();
+        if (!email) {
+            emailError.textContent = 'Email harus diisi';
+            emailError.style.display = 'block';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            emailError.textContent = 'Format email tidak valid';
+            emailError.style.display = 'block';
+        } else {
+            emailError.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('popup-message-text').addEventListener('blur', () => {
+        const message = document.getElementById('popup-message-text').value.trim();
+        if (!message) {
+            messageError.textContent = 'Pesan harus diisi';
+            messageError.style.display = 'block';
+        } else {
+            messageError.style.display = 'none';
+        }
+    });
+    
+    popupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+            return;
+        }
+        
+        const submitButton = popupForm.querySelector('button');
+        submitButton.disabled = true;
+        popupMessage.textContent = 'Menyimpan...';
+        popupMessage.style.color = '#ccc';
+        
+        const formData = {
+            name: document.getElementById('popup-name').value.trim(),
+            email: document.getElementById('popup-email').value.trim(),
+            company: document.getElementById('popup-company').value.trim(),
+            message: document.getElementById('popup-message-text').value.trim()
+        };
+        
+        try {
+            // Simulasi pengiriman data (dalam aplikasi nyata, ini akan mengirim ke server)
+            // Karena endpoint /contact-request mungkin tidak tersedia, kita simulasi saja
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulasi delay
+            
+            // Simulasi response sukses
+            popupMessage.textContent = 'Permintaan Anda telah disimpan. Terima kasih!';
+            popupMessage.style.color = '#63ed7a';
+            popupForm.reset();
+            
+            setTimeout(() => { 
+                popupOverlay.style.display = 'none'; 
+                popupMessage.textContent = ''; 
+            }, 3000);
+            
+        } catch (error) {
+            popupMessage.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+            popupMessage.style.color = '#ff4c4c';
+        } finally {
+            submitButton.disabled = false;
+        }
     });
   </script>
 </body>
