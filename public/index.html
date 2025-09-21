@@ -14,7 +14,8 @@
       color: #eee;
       scroll-behavior: smooth;
     }
-    #particle-canvas {
+    /* particles.js container */
+    #particles-js {
       position: fixed;
       top: 0;
       left: 0;
@@ -68,7 +69,7 @@
 </head>
 <body>
   
-  <canvas id="particle-canvas"></canvas>
+  <div id="particles-js"></div>
 
   <section id="hero">
     <div id="hero-content" data-aos="fade-up" data-aos-duration="1500">
@@ -135,132 +136,46 @@
   </div>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  
   <script>
     AOS.init({ once: true });
 
-    // --- ANIMASI PARTIKEL INTERAKTIF BARU ---
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particlesArray = [];
-    const mouse = { x: undefined, y: undefined, radius: 150 };
-    let target = { x: canvas.width / 2, y: canvas.height / 2 };
-    let isGathering = false;
-    let scatterTimeout, gatherTimeout;
-
-    function setTarget(x, y) {
-        target.x = x;
-        target.y = y;
-        isGathering = true;
-        
-        clearTimeout(scatterTimeout);
-        clearTimeout(gatherTimeout);
-
-        scatterTimeout = setTimeout(() => {
-            isGathering = false;
-            gatherTimeout = setTimeout(() => {
-                isGathering = true;
-            }, 5000); // Waktu partikel menyebar sebelum berkumpul lagi
-        }, 5000); // Waktu partikel berkumpul
-    }
-    
-    window.addEventListener('mousemove', (event) => {
-        mouse.x = event.x;
-        mouse.y = event.y;
+    // --- INISIALISASI PARTICLES.JS ---
+    particlesJS('particles-js', {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": { "enable": true, "value_area": 800 }
+        },
+        "color": { "value": "#1e90ff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.5, "random": false },
+        "size": { "value": 3, "random": true },
+        "line_linked": { "enable": true, "distance": 150, "color": "#1e90ff", "opacity": 0.4, "width": 1 },
+        "move": {
+          "enable": true, "speed": 6, "direction": "none", "random": false,
+          "straight": false, "out_mode": "out", "bounce": false,
+          "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": "repulse" },
+          "onclick": { "enable": true, "mode": "push" },
+          "resize": true
+        },
+        "modes": {
+          "grab": { "distance": 400, "line_linked": { "opacity": 1 } },
+          "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 },
+          "repulse": { "distance": 200, "duration": 0.4 },
+          "push": { "particles_nb": 4 },
+          "remove": { "particles_nb": 2 }
+        }
+      },
+      "retina_detect": true
     });
-    
-    window.addEventListener('click', (event) => {
-        setTarget(event.x, event.y);
-    });
-
-    class Particle {
-        constructor(x, y, size, color, weight) {
-            this.x = x;
-            this.y = y;
-            this.size = size;
-            this.color = color;
-            this.weight = weight; // Seberapa cepat partikel kembali
-            this.originX = x;
-            this.originY = y;
-            this.density = (Math.random() * 30) + 1;
-        }
-        draw() {
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
-        }
-        update() {
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            let forceDirectionX = dx / distance;
-            let forceDirectionY = dy / distance;
-            let maxDistance = mouse.radius;
-            let force = (maxDistance - distance) / maxDistance;
-            let directionX = forceDirectionX * force * this.density;
-            let directionY = forceDirectionY * force * this.density;
-
-            if (distance < mouse.radius) {
-                this.x -= directionX;
-                this.y -= directionY;
-            } else {
-                if (isGathering) {
-                    // Bergerak menuju target
-                    let dxt = target.x - this.x;
-                    let dyt = target.y - this.y;
-                    this.x += dxt / (20 * this.weight);
-                    this.y += dyt / (20 * this.weight);
-                } else {
-                    // Kembali ke posisi awal (menyebar)
-                    if (this.x !== this.originX) {
-                        let dxo = this.x - this.originX;
-                        this.x -= dxo / 10;
-                    }
-                    if (this.y !== this.originY) {
-                        let dyo = this.y - this.originY;
-                        this.y -= dyo / 10;
-                    }
-                }
-            }
-        }
-    }
-    
-    function init() {
-        particlesArray = [];
-        let numberOfParticles = (canvas.height * canvas.width) / 9000;
-        for (let i = 0; i < numberOfParticles; i++) {
-            let size = (Math.random() * 2) + 1;
-            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-            let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-            let color = '#1e90ff';
-            let weight = 1;
-            particlesArray.push(new Particle(x, y, size, color, weight));
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-            particlesArray[i].draw();
-        }
-        requestAnimationFrame(animate);
-    }
-    
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        init();
-    });
-
-    init();
-    animate();
-    // Inisialisasi target awal di tengah
-    setTimeout(() => setTarget(canvas.width / 2, canvas.height / 2 - 100), 1000);
 
 
     // --- LOAD DATA FROM SERVER ---
