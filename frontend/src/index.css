@@ -1,0 +1,45 @@
+/* src/index.css */
+
+/* Reset & base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #eee;
+  scroll-behavior: smooth;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: #1e90ff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  word-break: break-word;
+}
+
+a:hover, a:focus {
+  text-decoration: underline;
+  outline: none;
+  color: #63b3ed;
+}
+
+/* Loading and Error Screen Styles */
+.loading-screen, .error-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #ccd6f6;
+}
+
+.error-screen {
+  color: #ff4c4c;
+}
