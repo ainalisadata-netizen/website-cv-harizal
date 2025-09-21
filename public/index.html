@@ -7,18 +7,13 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <style>
     /* Reset & base */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #121212;
       color: #eee;
       scroll-behavior: smooth;
     }
-    /* Canvas Background */
     #particle-canvas {
       position: fixed;
       top: 0;
@@ -28,13 +23,8 @@
       z-index: -1;
       background: radial-gradient(circle at center, #1e1e1e, #121212);
     }
-    a {
-      color: #1e90ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
+    a { color: #1e90ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
     section {
       padding: 80px 20px;
       max-width: 900px;
@@ -42,178 +32,38 @@
       position: relative;
       z-index: 1;
     }
-    h1, h2, h3 {
-      margin-bottom: 0.5em;
-      font-weight: 700;
-    }
-    h1 {
-      font-size: 3rem;
-    }
-    h2 {
-      font-size: 2rem;
-      border-bottom: 2px solid #1e90ff;
-      padding-bottom: 0.3em;
-      margin-bottom: 1em;
-    }
-    p {
-      line-height: 1.6;
-      font-size: 1.1rem;
-    }
-    ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    li {
-      margin-bottom: 0.5em;
-    }
+    h1, h2, h3 { margin-bottom: 0.5em; font-weight: 700; }
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2rem; border-bottom: 2px solid #1e90ff; padding-bottom: 0.3em; margin-bottom: 1em; }
+    p { line-height: 1.6; font-size: 1.1rem; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin-bottom: 0.5em; }
     /* Hero Section */
-    #hero {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    #hero-content {
-      max-width: 600px;
-      padding: 0 20px;
-    }
-    #hero h1 {
-      font-size: 4rem;
-      margin-bottom: 0.2em;
-      color: #1e90ff;
-      text-shadow: 0 0 10px #1e90ff;
-    }
-    #hero h3 {
-      font-weight: 400;
-      font-size: 1.5rem;
-      margin-bottom: 1.5em;
-      color: #ccc;
-    }
-    #hero button {
-      background-color: #1e90ff;
-      border: none;
-      padding: 15px 30px;
-      font-size: 1.1rem;
-      color: white;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    #hero button:hover {
-      background-color: #0f5bb5;
-      transform: translateY(-2px);
-    }
+    #hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+    #hero-content { max-width: 600px; padding: 0 20px; }
+    #hero h1 { font-size: 4rem; margin-bottom: 0.2em; color: #1e90ff; text-shadow: 0 0 10px #1e90ff; }
+    #hero h3 { font-weight: 400; font-size: 1.5rem; margin-bottom: 1.5em; color: #ccc; }
+    #hero button { background-color: #1e90ff; border: none; padding: 15px 30px; font-size: 1.1rem; color: white; border-radius: 30px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
+    #hero button:hover { background-color: #0f5bb5; transform: translateY(-2px); }
     /* Sections Content */
-    .section-content {
-      background-color: rgba(30, 30, 30, 0.9);
-      border-radius: 10px;
-      padding: 30px;
-      box-shadow: 0 0 20px rgba(30, 144, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .item {
-      margin-bottom: 1.5em;
-      padding-bottom: 1.5em;
-      border-bottom: 1px solid #333;
-    }
-    .item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    .item-title {
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: #1e90ff;
-    }
-    .item-subtitle {
-      font-style: italic;
-      color: #aaa;
-      margin-bottom: 0.3em;
-    }
-    .project-category {
-      margin-bottom: 1.5em;
-    }
-    .project-category h4 {
-      color: #1e90ff;
-      margin-bottom: 0.5em;
-    }
+    .section-content { background-color: rgba(30, 30, 30, 0.9); border-radius: 10px; padding: 30px; box-shadow: 0 0 20px rgba(30, 144, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .item { margin-bottom: 1.5em; padding-bottom: 1.5em; border-bottom: 1px solid #333; }
+    .item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .item-title { font-weight: 700; font-size: 1.2rem; color: #1e90ff; }
+    .item-subtitle { font-style: italic; color: #aaa; margin-bottom: 0.3em; }
+    .project-category { margin-bottom: 1.5em; }
+    .project-category h4 { color: #1e90ff; margin-bottom: 0.5em; }
     /* Contact Popup */
-    #popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      display: none; /* Hidden by default */
-      justify-content: center;
-      align-items: center;
-    }
-    #popup-form-container {
-      background-color: #1e1e1e;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-      position: relative;
-    }
-    #popup-form-container h2 {
-        border-bottom: none;
-        text-align: center;
-    }
-    #popup-form label {
-        display: block;
-        margin-bottom: 5px;
-        color: #ccc;
-    }
-    #popup-form input, #popup-form textarea {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border-radius: 5px;
-        border: 1px solid #444;
-        background-color: #2a2a2a;
-        color: #eee;
-    }
-    #popup-form textarea {
-        resize: vertical;
-        min-height: 100px;
-    }
-    #popup-form button {
-        width: 100%;
-        padding: 12px;
-        border-radius: 5px;
-        background-color: #1e90ff;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-    }
-    #close-popup {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5rem;
-      color: #aaa;
-      cursor: pointer;
-      border: none;
-      background: none;
-    }
-    #popup-message {
-        text-align: center;
-        margin-top: 10px;
-        font-weight: bold;
-    }
-    /* Responsive */
-    @media (max-width: 600px) {
-      #hero h1 { font-size: 2.5rem; }
-      #hero h3 { font-size: 1.1rem; }
-    }
+    #popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; display: none; justify-content: center; align-items: center; }
+    #popup-form-container { background-color: #1e1e1e; padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); position: relative; }
+    #popup-form-container h2 { border-bottom: none; text-align: center; }
+    #popup-form label { display: block; margin-bottom: 5px; color: #ccc; }
+    #popup-form input, #popup-form textarea { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #444; background-color: #2a2a2a; color: #eee; }
+    #popup-form textarea { resize: vertical; min-height: 100px; }
+    #popup-form button { width: 100%; padding: 12px; border-radius: 5px; background-color: #1e90ff; color: white; border: none; cursor: pointer; font-size: 1rem; }
+    #close-popup { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; color: #aaa; cursor: pointer; border: none; background: none; }
+    #popup-message { text-align: center; margin-top: 10px; font-weight: bold; }
+    @media (max-width: 600px) { #hero h1 { font-size: 2.5rem; } #hero h3 { font-size: 1.1rem; } }
   </style>
 </head>
 <body>
@@ -230,26 +80,22 @@
 
   <section id="about" data-aos="fade-up" data-aos-duration="1000">
     <h2>About Me</h2>
-    <div class="section-content" id="about-content">
-      </div>
+    <div class="section-content" id="about-content"></div>
   </section>
 
   <section id="work-experience" data-aos="fade-up" data-aos-duration="1000">
     <h2>Work Experience</h2>
-    <div class="section-content" id="work-experience-content">
-      </div>
+    <div class="section-content" id="work-experience-content"></div>
   </section>
 
   <section id="projects" data-aos="fade-up" data-aos-duration="1000">
     <h2>Projects</h2>
-    <div class="section-content" id="projects-content">
-      </div>
+    <div class="section-content" id="projects-content"></div>
   </section>
 
   <section id="education" data-aos="fade-up" data-aos-duration="1000">
     <h2>Education</h2>
-    <div class="section-content" id="education-content">
-      </div>
+    <div class="section-content" id="education-content"></div>
   </section>
 
   <section id="certifications" data-aos="fade-up" data-aos-duration="1000">
@@ -265,10 +111,10 @@
   <section id="contact" data-aos="fade-up" data-aos-duration="1000">
     <h2>Contact</h2>
     <div class="section-content">
-      <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link">harizalbanget@gmail.com</a></p>
+      <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link"></a></p>
       <p>
-        <a href="https://linkedin.com/in/harizal" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a> |
-        <a href="https://github.com/harizal" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+        <a href="#" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a> |
+        <a href="#" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
       </p>
     </div>
   </section>
@@ -278,97 +124,144 @@
         <button id="close-popup">&times;</button>
         <h2>Minta Curriculum Vitae</h2>
         <form id="popup-form">
-            <label for="popup-name">Nama Anda:</label>
-            <input type="text" id="popup-name" name="name" required>
-            <label for="popup-email">Email Anda:</label>
-            <input type="email" id="popup-email" name="email" required>
-            <label for="popup-company">Perusahaan/Institusi:</label>
-            <input type="text" id="popup-company" name="company">
-            <label for="popup-message-text">Pesan:</label>
-            <textarea id="popup-message-text" name="message" required></textarea>
+            <label for="popup-name">Nama Anda:</label> <input type="text" id="popup-name" name="name" required>
+            <label for="popup-email">Email Anda:</label> <input type="email" id="popup-email" name="email" required>
+            <label for="popup-company">Perusahaan/Institusi:</label> <input type="text" id="popup-company" name="company">
+            <label for="popup-message-text">Pesan:</label> <textarea id="popup-message-text" name="message" required></textarea>
             <button type="submit">Kirim Permintaan</button>
         </form>
         <div id="popup-message"></div>
     </div>
   </div>
 
-
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
     AOS.init({ once: true });
 
-    // --- INTERACTIVE PARTICLE BACKGROUND ---
+    // --- ANIMASI PARTIKEL INTERAKTIF BARU ---
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     let particlesArray = [];
-    const mouse = { x: null, y: null };
+    const mouse = { x: undefined, y: undefined, radius: 150 };
+    let target = { x: canvas.width / 2, y: canvas.height / 2 };
+    let isGathering = false;
+    let scatterTimeout, gatherTimeout;
 
-    window.addEventListener('mousemove', function(event) {
+    function setTarget(x, y) {
+        target.x = x;
+        target.y = y;
+        isGathering = true;
+        
+        clearTimeout(scatterTimeout);
+        clearTimeout(gatherTimeout);
+
+        scatterTimeout = setTimeout(() => {
+            isGathering = false;
+            gatherTimeout = setTimeout(() => {
+                isGathering = true;
+            }, 5000); // Waktu partikel menyebar sebelum berkumpul lagi
+        }, 5000); // Waktu partikel berkumpul
+    }
+    
+    window.addEventListener('mousemove', (event) => {
         mouse.x = event.x;
         mouse.y = event.y;
     });
+    
+    window.addEventListener('click', (event) => {
+        setTarget(event.x, event.y);
+    });
 
     class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = Math.random() * 1.5 - 0.75;
-            this.speedY = Math.random() * 1.5 - 0.75;
-            this.color = '#1e90ff';
-        }
-        update() {
-            if (mouse.x !== null) {
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 100) {
-                    this.x += dx / 20;
-                    this.y += dy / 20;
-                }
-            }
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.size > 0.2) this.size -= 0.01;
-            if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        constructor(x, y, size, color, weight) {
+            this.x = x;
+            this.y = y;
+            this.size = size;
+            this.color = color;
+            this.weight = weight; // Seberapa cepat partikel kembali
+            this.originX = x;
+            this.originY = y;
+            this.density = (Math.random() * 30) + 1;
         }
         draw() {
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.closePath();
             ctx.fill();
         }
-    }
+        update() {
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let forceDirectionX = dx / distance;
+            let forceDirectionY = dy / distance;
+            let maxDistance = mouse.radius;
+            let force = (maxDistance - distance) / maxDistance;
+            let directionX = forceDirectionX * force * this.density;
+            let directionY = forceDirectionY * force * this.density;
 
-    function initParticles() {
+            if (distance < mouse.radius) {
+                this.x -= directionX;
+                this.y -= directionY;
+            } else {
+                if (isGathering) {
+                    // Bergerak menuju target
+                    let dxt = target.x - this.x;
+                    let dyt = target.y - this.y;
+                    this.x += dxt / (20 * this.weight);
+                    this.y += dyt / (20 * this.weight);
+                } else {
+                    // Kembali ke posisi awal (menyebar)
+                    if (this.x !== this.originX) {
+                        let dxo = this.x - this.originX;
+                        this.x -= dxo / 10;
+                    }
+                    if (this.y !== this.originY) {
+                        let dyo = this.y - this.originY;
+                        this.y -= dyo / 10;
+                    }
+                }
+            }
+        }
+    }
+    
+    function init() {
         particlesArray = [];
-        let numberOfParticles = (canvas.width * canvas.height) / 9000;
+        let numberOfParticles = (canvas.height * canvas.width) / 9000;
         for (let i = 0; i < numberOfParticles; i++) {
-            particlesArray.push(new Particle());
+            let size = (Math.random() * 2) + 1;
+            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+            let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+            let color = '#1e90ff';
+            let weight = 1;
+            particlesArray.push(new Particle(x, y, size, color, weight));
         }
     }
 
-    function animateParticles() {
+    function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < particlesArray.length; i++) {
             particlesArray[i].update();
             particlesArray[i].draw();
         }
-        requestAnimationFrame(animateParticles);
+        requestAnimationFrame(animate);
     }
-
-    window.addEventListener('resize', function() {
+    
+    window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        initParticles();
+        init();
     });
 
-    initParticles();
-    animateParticles();
+    init();
+    animate();
+    // Inisialisasi target awal di tengah
+    setTimeout(() => setTarget(canvas.width / 2, canvas.height / 2 - 100), 1000);
+
 
     // --- LOAD DATA FROM SERVER ---
     async function loadData() {
@@ -378,13 +271,17 @@
         const data = await res.json();
         
         if (data.personalInfo) {
-            document.getElementById('name').textContent = data.personalInfo.name || 'Your Name';
-            document.getElementById('title').textContent = data.personalInfo.title || 'Your Title';
+            document.getElementById('name').textContent = data.personalInfo.name || '';
+            document.getElementById('title').textContent = data.personalInfo.title || '';
+            document.getElementById('email-link').textContent = data.personalInfo.email || '';
+            document.getElementById('email-link').href = `mailto:${data.personalInfo.email || ''}`;
         }
+        
         const aboutContent = document.getElementById('about-content');
         if (data.personalInfo) {
-            aboutContent.innerHTML = `<p>Experienced IT professional with a strong background in consulting, network infrastructure, and security projects. Passionate about leveraging technology to solve complex problems and improve organizational security.</p><p><strong>Address:</strong> ${data.personalInfo.address || ''}</p><p><strong>Email:</strong> <a href="mailto:${data.personalInfo.email || ''}">${data.personalInfo.email || ''}</a></p>`;
+            aboutContent.innerHTML = `<p>Experienced IT professional with a strong background in consulting, network infrastructure, and security projects. Passionate about leveraging technology to solve complex problems and improve organizational security.</p><p><strong>Address:</strong> ${data.personalInfo.address || ''}</p>`;
         }
+
         const workContainer = document.getElementById('work-experience-content');
         workContainer.innerHTML = '';
         if (data.workExperience && data.workExperience.length > 0) {
@@ -395,6 +292,7 @@
               workContainer.appendChild(div);
             });
         }
+
         const projectsContainer = document.getElementById('projects-content');
         projectsContainer.innerHTML = '';
         const createProjectCategory = (title, items) => {
@@ -418,6 +316,7 @@
             projectsContainer.appendChild(createProjectCategory('Networking & Infrastructure', data.projects.network_infrastructure));
             projectsContainer.appendChild(createProjectCategory('Security', data.projects.security));
         }
+
         const educationContainer = document.getElementById('education-content');
         educationContainer.innerHTML = '';
         if (data.education && data.education.length > 0) {
@@ -428,6 +327,7 @@
               educationContainer.appendChild(div);
             });
         }
+
         const certList = document.getElementById('certifications-list');
         certList.innerHTML = '';
         if (data.certifications && data.certifications.length > 0) {
@@ -437,6 +337,7 @@
               certList.appendChild(li);
             });
         }
+        
         const trainingList = document.getElementById('trainings-list');
         trainingList.innerHTML = '';
         if (data.trainings && data.trainings.length > 0) {
@@ -446,15 +347,13 @@
               trainingList.appendChild(li);
             });
         }
-        if (data.personalInfo) {
-            document.getElementById('email-link').href = `mailto:${data.personalInfo.email || ''}`;
-        }
       } catch (error) {
         console.error('Error loading data:', error);
-        document.getElementById('about-content').textContent = 'Failed to load content. Please try again later.';
+        document.getElementById('about-content').innerHTML = '<p style="color: #ff4c4c;">Failed to load content. Please try again later.</p>';
       }
     }
     loadData();
+
 
     // --- CONTACT POPUP LOGIC ---
     const contactBtn = document.getElementById('contact-btn');
@@ -466,11 +365,9 @@
     contactBtn.addEventListener('click', () => {
         popupOverlay.style.display = 'flex';
     });
-
     closePopupBtn.addEventListener('click', () => {
         popupOverlay.style.display = 'none';
     });
-
     popupOverlay.addEventListener('click', (e) => {
         if (e.target === popupOverlay) {
             popupOverlay.style.display = 'none';
@@ -479,6 +376,8 @@
 
     popupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitButton = popupForm.querySelector('button');
+        submitButton.disabled = true;
         popupMessage.textContent = 'Mengirim...';
         popupMessage.style.color = '#ccc';
 
@@ -490,28 +389,24 @@
         };
 
         try {
-            // Note: This requires a new endpoint on the server to handle the email.
-            // We will add a `/contact-request` endpoint to server.js
             const res = await fetch('/contact-request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
-
             const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Server error');
 
-            if (result.success) {
-                popupMessage.textContent = 'Permintaan Anda telah terkirim. Terima kasih!';
-                popupMessage.style.color = '#63ed7a';
-                popupForm.reset();
-            } else {
-                throw new Error(result.message || 'Gagal mengirim permintaan.');
-            }
+            popupMessage.textContent = 'Permintaan Anda telah terkirim. Terima kasih!';
+            popupMessage.style.color = '#63ed7a';
+            popupForm.reset();
+            setTimeout(() => { popupOverlay.style.display = 'none'; popupMessage.textContent = ''; }, 3000);
 
         } catch (error) {
             popupMessage.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
             popupMessage.style.color = '#ff4c4c';
-            console.error('Contact form error:', error);
+        } finally {
+            submitButton.disabled = false;
         }
     });
   </script>
