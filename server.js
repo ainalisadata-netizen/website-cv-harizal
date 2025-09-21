@@ -8,8 +8,8 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const validator = require('validator'); // Menambahkan validator untuk email
-const rateLimit = require('express-rate-limit'); // Menambahkan rate limiter
+const validator = require('validator');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,7 +24,7 @@ mongoose.connect(mongoUri)
   .then(() => console.log('Successfully connected to MongoDB Atlas.'))
   .catch(err => {
     console.error('FATAL: Could not connect to MongoDB Atlas. Shutting down.', err);
-    process.exit(1); // Keluar dari aplikasi jika koneksi database gagal
+    process.exit(1);
   });
 
 // --- SCHEMA & MODEL (dengan validasi detail) ---
@@ -75,7 +75,7 @@ async function createFirstAdmin() {
     try {
         const existingAdmin = await Admin.findOne({ email: adminEmail });
         if (!existingAdmin) {
-            const hashedPassword = await bcrypt.hash(adminPassword, 12); // Salt rounds lebih tinggi
+            const hashedPassword = await bcrypt.hash(adminPassword, 12);
             const newAdmin = new Admin({ email: adminEmail, password: hashedPassword });
             await newAdmin.save();
             console.log('Admin user created successfully.');
@@ -92,7 +92,7 @@ createFirstAdmin();
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT, 10),
-    secure: process.env.EMAIL_SECURE === 'true', // Menggunakan boolean dari env
+    secure: process.env.EMAIL_SECURE === 'true',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -101,14 +101,11 @@ const transporter = nodemailer.createTransport({
 
 // --- RATE LIMITER (untuk keamanan) ---
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 menit
-    max: 100, // Maksimal 100 request per IP dalam 15 menit
-    standardHeaders: true,
-    legacyHeaders: false,
+    windowMs: 15 * 60 * 1000, max: 100, 
+    standardHeaders: true, legacyHeaders: false,
 });
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10, // Maksimal 10 percobaan login per IP dalam 15 menit
+    windowMs: 15 * 60 * 1000, max: 10,
     message: { success: false, message: 'Too many login attempts, please try again after 15 minutes.' }
 });
 
@@ -121,18 +118,23 @@ const escapeHtml = (unsafe) => {
 };
 
 
-// === ENDPOINT PUBLIK (TIDAK PERLU LOGIN) ===
+// =======================================================
+// === SEMUA RUTE API HARUS DITEMPATKAN DI ATAS CATCH-ALL ===
+// =======================================================
+
+// === ENDPOINT PUBLIK ===
 app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
-        let data = await CvData.findOne({ uniqueId: "main_cv" }).lean(); // Menggunakan .lean()
+        let data = await CvData.findOne({ uniqueId: "main_cv" }).lean();
         if (!data) {
-            data = new CvData({ uniqueId: "main_cv" });
+            const initialData = require('./data.json');
+            data = new CvData({ ...initialData, uniqueId: "main_cv" });
             await data.save();
-            data = data.toObject(); // Mengubah Mongoose doc menjadi object
+            data = data.toObject();
         }
         return res.json(data);
     } catch (error) {
-        next(error); // Melempar error ke global error handler
+        next(error);
     }
 });
 
@@ -147,11 +149,7 @@ app.post('/contact-request', apiLimiter, async (req, res, next) => {
             to: 'harizalbanget@gmail.com',
             subject: `Permintaan CV dari ${escapeHtml(name)}`,
             replyTo: email,
-            html: `<h3>Permintaan CV Baru</h3>
-                   <p><strong>Nama:</strong> ${escapeHtml(name)}</p>
-                   <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-                   <p><strong>Perusahaan:</strong> ${escapeHtml(company)}</p><hr>
-                   <p><strong>Pesan:</strong></p><p>${escapeHtml(message)}</p>`
+            html: `<h3>Permintaan CV Baru</h3><p><strong>Nama:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Perusahaan:</strong> ${escapeHtml(company)}</p><hr><p><strong>Pesan:</strong></p><p>${escapeHtml(message)}</p>`
         };
         await transporter.sendMail(mailOptions);
         return res.json({ success: true, message: 'Permintaan berhasil dikirim.' });
@@ -161,7 +159,7 @@ app.post('/contact-request', apiLimiter, async (req, res, next) => {
 });
 
 
-// === ENDPOINT ADMIN (PERLU LOGIN & TOKEN) ===
+// === ENDPOINT ADMIN ===
 app.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -201,13 +199,11 @@ const authenticateToken = (req, res, next) => {
 app.post('/update-data', authenticateToken, async (req, res, next) => {
     try {
         const newData = req.body;
-        // Validasi sederhana, bisa diganti dengan Joi atau Yup untuk lebih detail
         if (typeof newData.personalInfo !== 'object' || !Array.isArray(newData.workExperience)) {
             return res.status(400).json({ success: false, message: 'Invalid CV data structure' });
         }
         await CvData.findOneAndUpdate(
-            { uniqueId: "main_cv" },
-            newData,
+            { uniqueId: "main_cv" }, newData,
             { upsert: true, new: true, runValidators: true }
         ).lean();
         return res.json({ success: true, message: 'Data updated successfully' });
@@ -221,7 +217,7 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// --- GLOBAL ERROR HANDLER (rekomendasi Blackbox) ---
+// --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
   res.status(500).json({ success: false, message: 'An unexpected error occurred.' });
