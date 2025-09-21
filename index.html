@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://unpkg.com 'unsafe-inline'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net 'unsafe-inline';">
+  <title>Harizal - IT Consultant & Cyber Security Analyst</title>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #eee;
+      scroll-behavior: smooth;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    /* tsparticles container */
+    #tsparticles {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at center, #1e1e1e, #121212);
+    }
+    a {
+      color: #1e90ff; text-decoration: none;
+      transition: color 0.3s ease;
+      word-break: break-word;
+    }
+    a:hover, a:focus {
+      text-decoration: underline; outline: none;
+      color: #63b3ed;
+    }
+    section {
+      padding: 80px 20px; max-width: 900px;
+      margin: 0 auto; position: relative; z-index: 1;
+    }
+    h1, h2, h3 { margin-bottom: 0.5em; font-weight: 700; line-height: 1.1; }
+    h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      border-bottom: 2px solid #1e90ff;
+      padding-bottom: 0.3em; margin-bottom: 1em;
+    }
+    p { font-size: clamp(1rem, 2vw, 1.1rem); margin-bottom: 1em; color: #ddd; word-wrap: break-word; }
+    ul { list-style: none; padding-left: 0; margin-bottom: 1em; }
+    li { margin-bottom: 0.5em; line-height: 1.4; }
+    #hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+    #hero-content { max-width: 600px; }
+    #hero h1 { color: #1e90ff; text-shadow: 0 0 10px #1e90ff; margin-bottom: 0.3em; }
+    #hero h3 { font-weight: 400; font-size: clamp(1rem, 2vw, 1.5rem); margin-bottom: 1.5em; color: #ccc; }
+    #hero button {
+      background-color: #1e90ff; border: none; padding: 15px 30px;
+      font-size: 1.1rem; color: white; border-radius: 30px;
+      cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; user-select: none;
+    }
+    #hero button:hover, #hero button:focus { background-color: #0f5bb5; transform: translateY(-2px); outline: none; }
+    .section-content {
+      background-color: rgba(30, 30, 30, 0.9); border-radius: 10px;
+      padding: 30px; box-shadow: 0 0 20px rgba(30, 144, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .item { margin-bottom: 1.5em; padding-bottom: 1.5em; border-bottom: 1px solid #333; }
+    .item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .item-title { font-weight: 700; font-size: 1.2rem; color: #1e90ff; word-break: break-word; }
+    .item-subtitle { font-style: italic; color: #aaa; margin-bottom: 0.3em; word-break: break-word; }
+    .project-category { margin-bottom: 1.5em; }
+    .project-category h4 { color: #1e90ff; margin-bottom: 0.5em; }
+    #popup-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); z-index: 1000; display: none;
+      justify-content: center; align-items: center; padding: 20px;
+    }
+    #popup-form-container {
+      background-color: #1e1e1e; padding: 30px; border-radius: 10px;
+      width: 100%; max-width: 500px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+      position: relative; color: #eee;
+    }
+    #popup-form-container h2 { border-bottom: none; text-align: center; margin-bottom: 1em; font-size: 1.5rem; }
+    #popup-form label { display: block; margin-bottom: 5px; color: #ccc; font-weight: 600; }
+    #popup-form input, #popup-form textarea {
+      width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px;
+      border: 1px solid #444; background-color: #2a2a2a; color: #eee;
+      font-size: 1rem; font-family: inherit; transition: border-color 0.3s ease;
+    }
+    #popup-form input:focus, #popup-form textarea:focus { border-color: #1e90ff; outline: none; }
+    #popup-form textarea { resize: vertical; min-height: 100px; }
+    #popup-form button {
+      width: 100%; padding: 12px; border-radius: 5px; background-color: #1e90ff;
+      color: white; border: none; cursor: pointer; font-size: 1rem; font-weight: 700;
+      user-select: none; transition: background-color 0.3s ease;
+    }
+    #popup-form button:hover, #popup-form button:focus { background-color: #0f5bb5; outline: none; }
+    #close-popup {
+      position: absolute; top: 15px; right: 15px; font-size: 1.5rem; color: #aaa;
+      cursor: pointer; border: none; background: none; user-select: none;
+      transition: color 0.3s ease;
+    }
+    #close-popup:hover, #close-popup:focus { color: #fff; outline: none; }
+    #popup-message { text-align: center; margin-top: 10px; font-weight: 700; min-height: 1.5em; word-wrap: break-word; }
+    @media (max-width: 600px) {
+      #hero h1 { font-size: 2.5rem; }
+      #hero h3 { font-size: 1.1rem; }
+      section { padding: 60px 15px; }
+      #popup-form-container { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="tsparticles" aria-hidden="true"></div>
+
+  <header id="hero" role="banner" aria-label="Hero section with name and title">
+    <div id="hero-content" data-aos="fade-up" data-aos-duration="1500">
+      <h1 id="name">Harizal</h1>
+      <h3 id="title">IT Consultant | Cyber Security Analyst</h3>
+      <button id="contact-btn" aria-haspopup="dialog" aria-controls="popup-overlay" aria-expanded="false">Hubungi Kami</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="about" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>About Me</h2>
+      <div class="section-content" id="about-content" aria-live="polite"></div>
+    </section>
+
+    <section id="work-experience" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Work Experience</h2>
+      <div class="section-content" id="work-experience-content" aria-live="polite"></div>
+    </section>
+
+    <section id="projects" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Projects</h2>
+      <div class="section-content" id="projects-content" aria-live="polite"></div>
+    </section>
+
+    <section id="education" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Education</h2>
+      <div class="section-content" id="education-content" aria-live="polite"></div>
+    </section>
+
+    <section id="certifications" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Certifications & Training</h2>
+      <div class="section-content" id="certifications-content">
+        <h3>Certifications</h3>
+        <ul id="certifications-list" aria-live="polite"></ul>
+        <h3>Trainings</h3>
+        <ul id="trainings-list" aria-live="polite"></ul>
+      </div>
+    </section>
+
+    <section id="contact" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Contact</h2>
+      <div class="section-content">
+        <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link" rel="nofollow noopener noreferrer"></a></p>
+        <p>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a> |
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        </p>
+      </div>
+    </section>
+  </main>
+  
+  <div id="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popup-title" tabindex="-1">
+    <div id="popup-form-container">
+        <button id="close-popup" aria-label="Close contact form">&times;</button>
+        <h2 id="popup-title">Minta Curriculum Vitae</h2>
+        <form id="popup-form" novalidate>
+            <label for="popup-name">Nama Anda:</label>
+            <input type="text" id="popup-name" name="name" required autocomplete="name" aria-required="true" />
+            <label for="popup-email">Email Anda:</label>
+            <input type="email" id="popup-email" name="email" required autocomplete="email" aria-required="true" />
+            <label for="popup-company">Perusahaan/Institusi:</label>
+            <input type="text" id="popup-company" name="company" autocomplete="organization" />
+            <label for="popup-message-text">Pesan:</label>
+            <textarea id="popup-message-text" name="message" required aria-required="true"></textarea>
+            <button type="submit">Kirim Permintaan</button>
+        </form>
+        <div id="popup-message" role="alert" aria-live="assertive"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.5.0/tsparticles.bundle.min.js"></script>
+  
+  <script>
+    AOS.init({ once: true });
+
+    // PERBAIKAN 2: Format pemanggilan tsParticles diperbaiki
+    (async () => {
+        await tsParticles.load("tsparticles", { // Menggunakan ID sebagai parameter pertama
+            fpsLimit: 60,
+            interactivity: {
+                events: {
+                    onClick: { enable: true, mode: "push" },
+                    onHover: { enable: true, mode: "repulse" },
+                },
+                modes: {
+                    push: { quantity: 4 },
+                    repulse: { distance: 150, duration: 0.4 },
+                },
+            },
+            particles: {
+                color: { value: "#1e90ff" },
+                links: { color: "#1e90ff", distance: 150, enable: true, opacity: 0.3, width: 1 },
+                move: { direction: "none", enable: true, outModes: { default: "out" }, random: false, speed: 3, straight: false },
+                number: { density: { enable: true }, value: 80 },
+                opacity: { value: 0.4 },
+                shape: { type: "circle" },
+                size: { value: { min: 1, max: 4 } },
+            },
+            detectRetina: true,
+        });
+    })();
+
+    async function loadData() {
+        function createAndSetText(tag, text) { const el = document.createElement(tag); el.textContent = text || ''; return el; }
+        try {
+            const res = await fetch('/get-data');
+            if (!res.ok) throw new Error(`Server responded with status: ${res.status}`);
+            const data = await res.json();
+            const personalInfo = data.personalInfo || {};
+            const workExperience = Array.isArray(data.workExperience) ? data.workExperience : [];
+            const projects = data.projects || {};
+            const education = Array.isArray(data.education) ? data.education : [];
+            const certifications = Array.isArray(data.certifications) ? data.certifications : [];
+            const trainings = Array.isArray(data.trainings) ? data.trainings : [];
+            document.getElementById('name').textContent = personalInfo.name || 'Nama Tidak Tersedia';
+            document.getElementById('title').textContent = personalInfo.title || 'Judul Tidak Tersedia';
+            const emailLink = document.getElementById('email-link');
+            emailLink.textContent = personalInfo.email || '';
+            emailLink.href = personalInfo.email ? `mailto:${personalInfo.email}` : '#';
+            const aboutContent = document.getElementById('about-content');
+            aboutContent.innerHTML = '';
+            const aboutP1 = createAndSetText('p', 'Experienced IT professional...');
+            const aboutP2 = document.createElement('p');
+            const addressStrong = createAndSetText('strong', 'Address: ');
+            aboutP2.appendChild(addressStrong);
+            aboutP2.append(document.createTextNode(personalInfo.address || 'Tidak Tersedia'));
+            aboutContent.appendChild(aboutP1);
+            aboutContent.appendChild(aboutP2);
+            const workContainer = document.getElementById('work-experience-content');
+            workContainer.innerHTML = '';
+            workExperience.forEach(exp => {
+              const div = document.createElement('div');
+              div.classList.add('item');
+              const titleDiv = createAndSetText('div', exp.position);
+              titleDiv.className = 'item-title';
+              const subtitleDiv = createAndSetText('div', `${exp.company || ''} | ${exp.period || ''}`);
+              subtitleDiv.className = 'item-subtitle';
+              div.appendChild(titleDiv);
+              div.appendChild(subtitleDiv);
+              workContainer.appendChild(div);
+            });
+            const projectsContainer = document.getElementById('projects-content');
+            projectsContainer.innerHTML = '';
+            const createProjectCategory = (title, items) => {
+                if (!Array.isArray(items) || items.length === 0) return document.createDocumentFragment();
+                const catDiv = document.createElement('div');
+                catDiv.classList.add('project-category');
+                catDiv.appendChild(createAndSetText('h4', title));
+                const ul = document.createElement('ul');
+                items.forEach(item => { ul.appendChild(createAndSetText('li', item)); });
+                catDiv.appendChild(ul);
+                return catDiv;
+            };
+            projectsContainer.appendChild(createProjectCategory('IT', projects.it));
+            projectsContainer.appendChild(createProjectCategory('Networking & Infrastructure', projects.network_infrastructure));
+            projectsContainer.appendChild(createProjectCategory('Security', projects.security));
+            const educationContainer = document.getElementById('education-content');
+            educationContainer.innerHTML = '';
+            education.forEach(edu => {
+                const div = document.createElement('div');
+                div.classList.add('item');
+                const degreeDiv = createAndSetText('div', edu.degree);
+                degreeDiv.className = 'item-title';
+                const institutionDiv = createAndSetText('div', `${edu.institution || ''} | ${edu.status || ''}`);
+                institutionDiv.className = 'item-subtitle';
+                div.appendChild(degreeDiv);
+                div.appendChild(institutionDiv);
+                educationContainer.appendChild(div);
+            });
+            const certList = document.getElementById('certifications-list');
+            certList.innerHTML = '';
+            certifications.forEach(cert => { certList.appendChild(createAndSetText('li', cert)); });
+            const trainingList = document.getElementById('trainings-list');
+            trainingList.innerHTML = '';
+            trainings.forEach(training => { trainingList.appendChild(createAndSetText('li', training)); });
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('about-content').innerHTML = '<p style="color: #ff4c4c;">Failed to load content. Please try again later.</p>';
+        }
+    }
+    loadData();
+
+    // ... (Logika popup Anda sama dan sudah benar)
+    const contactBtn = document.getElementById('contact-btn');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const closePopupBtn = document.getElementById('close-popup');
+    const popupForm = document.getElementById('popup-form');
+    const popupMessage = document.getElementById('popup-message');
+    contactBtn.addEventListener('click', () => { popupOverlay.style.display = 'flex'; document.getElementById('popup-name').focus(); });
+    closePopupBtn.addEventListener('click', () => { popupOverlay.style.display = 'none'; });
+    popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) { popupOverlay.style.display = 'none'; } });
+    popupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitButton = popupForm.querySelector('button');
+        submitButton.disabled = true;
+        popupMessage.textContent = 'Menyimpan...';
+        popupMessage.style.color = '#ccc';
+        const formData = {
+            name: document.getElementById('popup-name').value,
+            email: document.getElementById('popup-email').value,
+            company: document.getElementById('popup-company').value,
+            message: document.getElementById('popup-message-text').value
+        };
+        try {
+            const res = await fetch('/contact-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Server error');
+            popupMessage.textContent = 'Permintaan Anda telah disimpan. Terima kasih!';
+            popupMessage.style.color = '#63ed7a';
+            popupForm.reset();
+            setTimeout(() => { popupOverlay.style.display = 'none'; popupMessage.textContent = ''; }, 3000);
+        } catch (error) {
+            popupMessage.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+            popupMessage.style.color = '#ff4c4c';
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+  </script>
+</body>
+</html>
