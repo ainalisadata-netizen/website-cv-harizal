@@ -1,4 +1,4 @@
-// server.js (Versi Final dengan Perbaikan Urutan Rute)
+// server.js (Final Version with Blackbox AI Recommendations)
 
 require('dotenv').config();
 const express = require('express');
@@ -8,6 +8,8 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const validator = require('validator'); // Menambahkan validator untuk email
+const rateLimit = require('express-rate-limit'); // Menambahkan rate limiter
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,34 +18,65 @@ const JWT_SECRET = process.env.JWT_SECRET;
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- KONEKSI KE DATABASE MONGODB ---
+// --- KONEKSI KE DATABASE MONGODB (dengan opsi rekomendasi) ---
 const mongoUri = process.env.MONGO_CONNECTION_STRING;
 mongoose.connect(mongoUri)
   .then(() => console.log('Successfully connected to MongoDB Atlas.'))
-  .catch(err => console.error('Error connecting to MongoDB Atlas:', err));
+  .catch(err => {
+    console.error('FATAL: Could not connect to MongoDB Atlas. Shutting down.', err);
+    process.exit(1); // Keluar dari aplikasi jika koneksi database gagal
+  });
 
-// --- MODEL DATA (Schema) ---
+// --- SCHEMA & MODEL (dengan validasi detail) ---
 const AdminSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true }
 });
 const Admin = mongoose.model('Admin', AdminSchema);
 
 const cvSchema = new mongoose.Schema({
   uniqueId: { type: String, default: "main_cv", unique: true },
-  personalInfo: Object, education: Array, workExperience: Array,
-  certifications: Array, trainings: Array, projects: Object,
+  personalInfo: {
+    name: { type: String, default: '' },
+    title: { type: String, default: '' },
+    address: { type: String, default: '' },
+    email: { type: String, default: '' },
+  },
+  education: [{
+    degree: String,
+    institution: String,
+    status: String,
+  }],
+  workExperience: [{
+    period: String,
+    company: String,
+    position: String,
+  }],
+  certifications: [String],
+  trainings: [String],
+  projects: {
+    it: [String],
+    network_infrastructure: [String],
+    security: [String],
+  }
 });
 const CvData = mongoose.model('CvData', cvSchema);
 
-
-// --- FUNGSI MEMBUAT ADMIN PERTAMA KALI ---
+// --- FUNGSI MEMBUAT ADMIN PERTAMA KALI (lebih aman) ---
 async function createFirstAdmin() {
+    const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'harizalbanget@gmail.com';
+    const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      console.warn('WARNING: DEFAULT_ADMIN_PASSWORD is not set in .env. Admin user cannot be created.');
+      return;
+    }
+
     try {
-        const existingAdmin = await Admin.findOne({ email: 'harizalbanget@gmail.com' });
+        const existingAdmin = await Admin.findOne({ email: adminEmail });
         if (!existingAdmin) {
-            const hashedPassword = await bcrypt.hash('PasswordSuperAman123', 10);
-            const newAdmin = new Admin({ email: 'harizalbanget@gmail.com', password: hashedPassword });
+            const hashedPassword = await bcrypt.hash(adminPassword, 12); // Salt rounds lebih tinggi
+            const newAdmin = new Admin({ email: adminEmail, password: hashedPassword });
             await newAdmin.save();
             console.log('Admin user created successfully.');
         } else {
@@ -55,116 +88,145 @@ async function createFirstAdmin() {
 }
 createFirstAdmin();
 
-// --- TRANSPORTER EMAIL ---
+// --- TRANSPORTER EMAIL (lebih aman) ---
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT, 10),
-    secure: false,
+    secure: process.env.EMAIL_SECURE === 'true', // Menggunakan boolean dari env
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
 });
 
+// --- RATE LIMITER (untuk keamanan) ---
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 menit
+    max: 100, // Maksimal 100 request per IP dalam 15 menit
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10, // Maksimal 10 percobaan login per IP dalam 15 menit
+    message: { success: false, message: 'Too many login attempts, please try again after 15 minutes.' }
+});
 
-// =======================================================
-// === SEMUA RUTE API HARUS DITEMPATKAN DI ATAS CATCH-ALL ===
-// =======================================================
+// Helper untuk sanitasi HTML
+const escapeHtml = (unsafe) => {
+    if (typeof unsafe !== 'string') return '';
+    return unsafe.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    })[m]);
+};
+
 
 // === ENDPOINT PUBLIK (TIDAK PERLU LOGIN) ===
-
-app.get('/get-data', async (req, res) => {
+app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
-        let data = await CvData.findOne({ uniqueId: "main_cv" });
+        let data = await CvData.findOne({ uniqueId: "main_cv" }).lean(); // Menggunakan .lean()
         if (!data) {
-            data = new CvData({
-                uniqueId: "main_cv",
-                personalInfo: { name: "Harizal", title: "IT Consultant" },
-                education: [], workExperience: [], certifications: [], trainings: [],
-                projects: { it: [], network_infrastructure: [], security: [] }
-            });
+            data = new CvData({ uniqueId: "main_cv" });
             await data.save();
+            data = data.toObject(); // Mengubah Mongoose doc menjadi object
         }
         return res.json(data);
     } catch (error) {
-        console.error('Error in /get-data:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+        next(error); // Melempar error ke global error handler
     }
 });
 
-app.post('/contact-request', async (req, res) => {
+app.post('/contact-request', apiLimiter, async (req, res, next) => {
     try {
         const { name, email, company, message } = req.body;
-        if (!name || !email || !message) {
-            return res.status(400).json({ success: false, message: 'Nama, email, dan pesan wajib diisi.' });
+        if (!name || !email || !message || !validator.isEmail(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid input provided.' });
         }
         const mailOptions = {
             from: `"Notifikasi Website CV" <${process.env.EMAIL_USER}>`,
             to: 'harizalbanget@gmail.com',
-            subject: `Permintaan CV dari ${name}`,
+            subject: `Permintaan CV dari ${escapeHtml(name)}`,
             replyTo: email,
-            html: `<h3>Permintaan CV Baru</h3><p><strong>Nama:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Perusahaan:</strong> ${company}</p><hr><p><strong>Pesan:</strong></p><p>${message}</p>`
+            html: `<h3>Permintaan CV Baru</h3>
+                   <p><strong>Nama:</strong> ${escapeHtml(name)}</p>
+                   <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+                   <p><strong>Perusahaan:</strong> ${escapeHtml(company)}</p><hr>
+                   <p><strong>Pesan:</strong></p><p>${escapeHtml(message)}</p>`
         };
         await transporter.sendMail(mailOptions);
         return res.json({ success: true, message: 'Permintaan berhasil dikirim.' });
     } catch (error) {
-        console.error('Error in /contact-request:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error.' });
+        next(error);
     }
 });
 
 
 // === ENDPOINT ADMIN (PERLU LOGIN & TOKEN) ===
-
-app.post('/login', async (req, res) => {
+app.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { email, password } = req.body;
-        if (!email || typeof email !== 'string' || !password) {
+        if (!email || !password || !validator.isEmail(email)) {
             return res.status(400).json({ success: false, message: 'Invalid input' });
         }
         const admin = await Admin.findOne({ email: email.toLowerCase() });
         if (!admin) {
-            return res.status(401).json({ success: false, message: 'Invalid email or password' });
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
         const isPasswordMatch = await bcrypt.compare(password, admin.password);
         if (!isPasswordMatch) {
-            return res.status(401).json({ success: false, message: 'Invalid email or password' });
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
-        const token = jwt.sign({ adminId: admin._id }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ adminId: admin._id, email: admin.email }, JWT_SECRET, { expiresIn: '1h' });
         res.json({ success: true, message: 'Login successful', token: token });
     } catch (error) {
-        console.error('Error in /login:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        next(error);
     }
 });
 
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
+    if (!token) return res.status(401).json({ success: false, message: 'Access token is missing or invalid' });
+
     jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) {
+            console.error('JWT Verification Error:', err.message);
+            return res.status(403).json({ success: false, message: 'Token is not valid' });
+        }
         req.user = user;
         next();
     });
 };
 
-app.post('/update-data', authenticateToken, async (req, res) => {
+app.post('/update-data', authenticateToken, async (req, res, next) => {
     try {
         const newData = req.body;
-        await CvData.findOneAndUpdate({ uniqueId: "main_cv" }, newData, { upsert: true, new: true });
+        // Validasi sederhana, bisa diganti dengan Joi atau Yup untuk lebih detail
+        if (typeof newData.personalInfo !== 'object' || !Array.isArray(newData.workExperience)) {
+            return res.status(400).json({ success: false, message: 'Invalid CV data structure' });
+        }
+        await CvData.findOneAndUpdate(
+            { uniqueId: "main_cv" },
+            newData,
+            { upsert: true, new: true, runValidators: true }
+        ).lean();
         return res.json({ success: true, message: 'Data updated successfully' });
     } catch (error) {
-        console.error('Error in /update-data:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+        next(error);
     }
 });
 
 // --- RUTE CATCH-ALL (HARUS PALING BAWAH) ---
-// Ini akan menangani semua permintaan yang tidak cocok dengan rute API di atas
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// --- GLOBAL ERROR HANDLER (rekomendasi Blackbox) ---
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  res.status(500).json({ success: false, message: 'An unexpected error occurred.' });
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
