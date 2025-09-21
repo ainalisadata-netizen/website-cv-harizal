@@ -1,4 +1,3 @@
-<!-- admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,18 +10,12 @@
   <h1>Harizal CV Admin Panel</h1>
 
   <div id="login-section">
-    <form id="username-form">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required autocomplete="off" />
-      <button type="submit">Send OTP</button>
-    </form>
-  </div>
-
-  <div id="otp-section" style="display:none;">
-    <form id="otp-form">
-      <label for="otp">Enter OTP:</label>
-      <input type="text" id="otp" name="otp" maxlength="6" pattern="\d{6}" required autocomplete="off" />
-      <button type="submit">Verify OTP</button>
+    <form id="login-form">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required autocomplete="email" />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password" />
+      <button type="submit">Masuk</button>
     </form>
   </div>
 
