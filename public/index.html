@@ -114,13 +114,74 @@
   <div id="tsparticles" aria-hidden="true"></div>
 
   <header id="hero" role="banner" aria-label="Hero section with name and title">
-      </header>
+    <div id="hero-content" data-aos="fade-up" data-aos-duration="1500">
+      <h1 id="name">Harizal</h1>
+      <h3 id="title">IT Consultant | Cyber Security Analyst</h3>
+      <button id="contact-btn" aria-haspopup="dialog" aria-controls="popup-overlay" aria-expanded="false">Hubungi Kami</button>
+    </div>
+  </header>
 
   <main>
-      </main>
+    <section id="about" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>About Me</h2>
+      <div class="section-content" id="about-content" aria-live="polite"></div>
+    </section>
+
+    <section id="work-experience" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Work Experience</h2>
+      <div class="section-content" id="work-experience-content" aria-live="polite"></div>
+    </section>
+
+    <section id="projects" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Projects</h2>
+      <div class="section-content" id="projects-content" aria-live="polite"></div>
+    </section>
+
+    <section id="education" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Education</h2>
+      <div class="section-content" id="education-content" aria-live="polite"></div>
+    </section>
+
+    <section id="certifications" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Certifications & Training</h2>
+      <div class="section-content" id="certifications-content">
+        <h3>Certifications</h3>
+        <ul id="certifications-list" aria-live="polite"></ul>
+        <h3>Trainings</h3>
+        <ul id="trainings-list" aria-live="polite"></ul>
+      </div>
+    </section>
+
+    <section id="contact" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
+      <h2>Contact</h2>
+      <div class="section-content">
+        <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link" rel="nofollow noopener noreferrer"></a></p>
+        <p>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a> |
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        </p>
+      </div>
+    </section>
+  </main>
   
   <div id="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popup-title" tabindex="-1">
-      </div>
+    <div id="popup-form-container">
+        <button id="close-popup" aria-label="Close contact form">&times;</button>
+        <h2 id="popup-title">Minta Curriculum Vitae</h2>
+        <form id="popup-form" novalidate>
+            <label for="popup-name">Nama Anda:</label>
+            <input type="text" id="popup-name" name="name" required autocomplete="name" aria-required="true" />
+            <label for="popup-email">Email Anda:</label>
+            <input type="email" id="popup-email" name="email" required autocomplete="email" aria-required="true" />
+            <label for="popup-company">Perusahaan/Institusi:</label>
+            <input type="text" id="popup-company" name="company" autocomplete="organization" />
+            <label for="popup-message-text">Pesan:</label>
+            <textarea id="popup-message-text" name="message" required aria-required="true"></textarea>
+            <button type="submit">Kirim Permintaan</button>
+        </form>
+        <div id="popup-message" role="alert" aria-live="assertive"></div>
+    </div>
+  </div>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.5.0/tsparticles.bundle.min.js"></script>
@@ -128,7 +189,7 @@
   <script>
     AOS.init({ once: true });
 
-    // PERBAIKAN 2: Format pemanggilan tsParticles diperbaiki
+    // PERBAIKAN: Format pemanggilan tsParticles diperbaiki
     (async () => {
         await tsParticles.load("tsparticles", { // Menggunakan ID sebagai parameter pertama
             fpsLimit: 60,
@@ -156,7 +217,6 @@
     })();
 
     async function loadData() {
-        // ... (Fungsi loadData Anda sama dan sudah aman)
         function createAndSetText(tag, text) { const el = document.createElement(tag); el.textContent = text || ''; return el; }
         try {
             const res = await fetch('/get-data');
