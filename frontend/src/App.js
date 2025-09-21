@@ -1,9 +1,7 @@
-// src/App.js (Final dengan Animasi Partikel Interaktif)
-import React, { useEffect, useState, useCallback } from 'react';
+// src/App.js (Final dengan Animasi Liquid Ether)
+import React, { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
 
 import './App.css';
 import './index.css';
@@ -17,6 +15,7 @@ import Certifications from './components/Certifications';
 import ContactSection from './components/ContactSection';
 import ContactForm from './components/ContactForm';
 import useDataFetcher from './hooks/useDataFetcher';
+import LiquidEtherBackground from './components/LiquidEtherBackground'; // Import komponen baru
 
 function App() {
   const { data, loading, error } = useDataFetcher('/get-data');
@@ -26,79 +25,6 @@ function App() {
     AOS.init({ once: true, duration: 1000 });
   }, []);
 
-  const particlesInit = useCallback(async (engine) => {
-    // Inisialisasi tsparticles engine
-    await loadFull(engine);
-  }, []);
-
-  const particleOptions = {
-      background: {
-          color: {
-              value: "#121212"
-          }
-      },
-      fpsLimit: 120,
-      interactivity: {
-          events: {
-              onClick: {
-                  enable: true,
-                  mode: "push"
-              },
-              onHover: {
-                  enable: true,
-                  mode: "repulse"
-              }
-          },
-          modes: {
-              push: {
-                  quantity: 4
-              },
-              repulse: {
-                  distance: 200,
-                  duration: 0.4
-              }
-          }
-      },
-      particles: {
-          color: {
-              value: "#1e90ff"
-          },
-          links: {
-              color: "#1e90ff",
-              distance: 150,
-              enable: true,
-              opacity: 0.2,
-              width: 1
-          },
-          move: {
-              direction: "none",
-              enable: true,
-              outModes: {
-                  default: "bounce"
-              },
-              random: false,
-              speed: 2,
-              straight: false
-          },
-          number: {
-              density: {
-                  enable: true,
-              },
-              value: 80
-          },
-          opacity: {
-              value: 0.3
-          },
-          shape: {
-              type: "circle"
-          },
-          size: {
-              value: { min: 1, max: 5 }
-          }
-      },
-      detectRetina: true
-  };
-
   if (loading) return <div className="loading-screen">Loading portfolio...</div>;
   if (error) return <div className="error-screen">Error: {error.message}</div>;
   if (!data) return null;
@@ -106,12 +32,8 @@ function App() {
   const { personalInfo, workExperience, projects, education, certifications, trainings } = data;
 
   return (
-    <>
-      <Particles
-          id="tsparticles"
-          init={particlesInit}
-          options={particleOptions}
-      />
+    <div className="app-container">
+      <LiquidEtherBackground /> {/* Tambahkan komponen latar belakang di sini */}
 
       <Hero
         name={personalInfo?.name || 'Nama Tidak Tersedia'}
@@ -135,7 +57,7 @@ function App() {
       </main>
 
       <ContactForm isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
-    </>
+    </div>
   );
 }
 
