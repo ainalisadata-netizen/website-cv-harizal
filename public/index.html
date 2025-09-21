@@ -189,32 +189,75 @@
   <script>
     AOS.init({ once: true });
 
-    // PERBAIKAN: Format pemanggilan tsParticles diperbaiki
+    // --- INISIALISASI TSPARTICLES DENGAN KONFIGURASI BARU DARI REFERENSI ---
     (async () => {
-        await tsParticles.load("tsparticles", { // Menggunakan ID sebagai parameter pertama
-            fpsLimit: 60,
+        const options = {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        area: 800
+                    }
+                },
+                color: {
+                    value: ["#2EB67D", "#ECB22E", "#E01E5B", "#36C5F0"] // Warna-warni seperti referensi
+                },
+                shape: {
+                    type: "circle"
+                },
+                opacity: {
+                    value: 1
+                },
+                size: {
+                    value: { min: 1, max: 8 }
+                },
+                links: {
+                    enable: true,
+                    distance: 150,
+                    color: "#808080",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 5,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    outModes: "out"
+                }
+            },
             interactivity: {
                 events: {
-                    onClick: { enable: true, mode: "push" },
-                    onHover: { enable: true, mode: "repulse" },
+                    onHover: {
+                        enable: true,
+                        mode: "grab"
+                    },
+                    onClick: {
+                        enable: true,
+                        mode: "push"
+                    }
                 },
                 modes: {
-                    push: { quantity: 4 },
-                    repulse: { distance: 150, duration: 0.4 },
-                },
-            },
-            particles: {
-                color: { value: "#1e90ff" },
-                links: { color: "#1e90ff", distance: 150, enable: true, opacity: 0.3, width: 1 },
-                move: { direction: "none", enable: true, outModes: { default: "out" }, random: false, speed: 3, straight: false },
-                number: { density: { enable: true }, value: 80 },
-                opacity: { value: 0.4 },
-                shape: { type: "circle" },
-                size: { value: { min: 1, max: 4 } },
+                    grab: {
+                        distance: 140,
+                        links: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        quantity: 4
+                    }
+                }
             },
             detectRetina: true,
-        });
+            fpsLimit: 120, // Performa lebih halus
+        };
+
+        await tsParticles.load("tsparticles", options);
     })();
+
 
     async function loadData() {
         function createAndSetText(tag, text) { const el = document.createElement(tag); el.textContent = text || ''; return el; }
