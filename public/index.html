@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://cdn.jsdelivr.net/npm/tsparticles@3.5.0/tsparticles.bundle.min.js; style-src 'self' https://unpkg.com 'unsafe-inline';">
   <title>Harizal - IT Consultant & Cyber Security Analyst</title>
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <style>
@@ -17,8 +18,8 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-    /* particles.js container */
-    #particles-js {
+    /* tsparticles container */
+    #tsparticles {
       position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
@@ -114,7 +115,7 @@
 </head>
 <body>
   
-  <div id="particles-js" aria-hidden="true"></div>
+  <div id="tsparticles" aria-hidden="true"></div>
 
   <header id="hero" role="banner" aria-label="Hero section with name and title">
     <div id="hero-content" data-aos="fade-up" data-aos-duration="1500">
@@ -190,38 +191,228 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.5.0/tsparticles.bundle.min.js"></script>
   
   <script>
     AOS.init({ once: true });
 
-    // --- INISIALISASI PARTICLES.JS ---
-    particlesJS('particles-js', {
-      particles: {
-        number: { value: 60, density: { enable: true, value_area: 700 } },
-        color: { value: "#1e90ff" },
-        shape: { type: "circle" },
-        opacity: { value: 0.4, random: false },
-        size: { value: 3, random: true },
-        line_linked: { enable: true, distance: 140, color: "#1e90ff", opacity: 0.3, width: 1 },
-        move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
-      },
-      interactivity: {
-        detect_on: "canvas",
-        events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
-        modes: { repulse: { distance: 120, duration: 0.4 }, push: { particles_nb: 4 } }
-      },
-      retina_detect: true
-    });
+    // **PERUBAHAN 3**: INISIALISASI DIGANTI MENGGUNAKAN TSPARTICLES
+    (async () => {
+        await tsParticles.load({
+            id: "tsparticles",
+            options: {
+                fpsLimit: 60,
+                interactivity: {
+                    events: {
+                        onClick: { enable: true, mode: "push" },
+                        onHover: { enable: true, mode: "repulse" },
+                    },
+                    modes: {
+                        push: { quantity: 4 },
+                        repulse: { distance: 150, duration: 0.4 },
+                    },
+                },
+                particles: {
+                    color: { value: "#1e90ff" },
+                    links: {
+                        color: "#1e90ff",
+                        distance: 150,
+                        enable: true,
+                        opacity: 0.3,
+                        width: 1,
+                    },
+                    move: {
+                        direction: "none",
+                        enable: true,
+                        outModes: { default: "out" },
+                        random: false,
+                        speed: 3,
+                        straight: false,
+                    },
+                    number: {
+                        density: { enable: true },
+                        value: 80,
+                    },
+                    opacity: { value: 0.4 },
+                    shape: { type: "circle" },
+                    size: { value: { min: 1, max: 4 } },
+                },
+                detectRetina: true,
+            },
+        });
+    })();
 
 
-    // --- LOAD DATA FROM SERVER ---
+    // --- LOAD DATA FROM SERVER (Dengan perbaikan keamanan) ---
     async function loadData() {
+      // Helper function untuk membuat elemen dan mengisi textContent (Mencegah XSS)
+      function createAndSetText(tag, text) {
+          const el = document.createElement(tag);
+          el.textContent = text || '';
+          return el;
+      }
+      
       try {
         const res = await fetch('/get-data');
         if (!res.ok) throw new Error(`Server responded with status: ${res.status}`);
         const data = await res.json();
         
         const personalInfo = data.personalInfo || {};
-        const workExperience = Array.isArray(data
+        const workExperience = Array.isArray(data.workExperience) ? data.workExperience : [];
+        const projects = data.projects || {};
+        const education = Array.isArray(data.education) ? data.education : [];
+        const certifications = Array.isArray(data.certifications) ? data.certifications : [];
+        const trainings = Array.isArray(data.trainings) ? data.trainings : [];
+
+        document.getElementById('name').textContent = personalInfo.name || 'Nama Tidak Tersedia';
+        document.getElementById('title').textContent = personalInfo.title || 'Judul Tidak Tersedia';
+        const emailLink = document.getElementById('email-link');
+        emailLink.textContent = personalInfo.email || '';
+        emailLink.href = personalInfo.email ? `mailto:${personalInfo.email}` : '#';
+        
+        const aboutContent = document.getElementById('about-content');
+        aboutContent.innerHTML = '';
+        const aboutP1 = createAndSetText('p', 'Experienced IT professional...');
+        const aboutP2 = document.createElement('p');
+        const addressStrong = createAndSetText('strong', 'Address: ');
+        aboutP2.appendChild(addressStrong);
+        aboutP2.append(document.createTextNode(personalInfo.address || 'Tidak Tersedia'));
+        aboutContent.appendChild(aboutP1);
+        aboutContent.appendChild(aboutP2);
+
+
+        const workContainer = document.getElementById('work-experience-content');
+        workContainer.innerHTML = '';
+        workExperience.forEach(exp => {
+          const div = document.createElement('div');
+          div.classList.add('item');
+          
+          const titleDiv = createAndSetText('div', exp.position);
+          titleDiv.className = 'item-title';
+          
+          const subtitleDiv = createAndSetText('div', `${exp.company || ''} | ${exp.period || ''}`);
+          subtitleDiv.className = 'item-subtitle';
+
+          div.appendChild(titleDiv);
+          div.appendChild(subtitleDiv);
+          workContainer.appendChild(div);
+        });
+
+        const projectsContainer = document.getElementById('projects-content');
+        projectsContainer.innerHTML = '';
+        const createProjectCategory = (title, items) => {
+            if (!Array.isArray(items) || items.length === 0) return document.createDocumentFragment();
+            const catDiv = document.createElement('div');
+            catDiv.classList.add('project-category');
+            catDiv.appendChild(createAndSetText('h4', title));
+            const ul = document.createElement('ul');
+            items.forEach(item => {
+                ul.appendChild(createAndSetText('li', item));
+            });
+            catDiv.appendChild(ul);
+            return catDiv;
+        };
+        projectsContainer.appendChild(createProjectCategory('IT', projects.it));
+        projectsContainer.appendChild(createProjectCategory('Networking & Infrastructure', projects.network_infrastructure));
+        projectsContainer.appendChild(createProjectCategory('Security', projects.security));
+
+        const educationContainer = document.getElementById('education-content');
+        educationContainer.innerHTML = '';
+        education.forEach(edu => {
+            const div = document.createElement('div');
+            div.classList.add('item');
+
+            const degreeDiv = createAndSetText('div', edu.degree);
+            degreeDiv.className = 'item-title';
+
+            const institutionDiv = createAndSetText('div', `${edu.institution || ''} | ${edu.status || ''}`);
+            institutionDiv.className = 'item-subtitle';
+
+            div.appendChild(degreeDiv);
+            div.appendChild(institutionDiv);
+            educationContainer.appendChild(div);
+        });
+
+        const certList = document.getElementById('certifications-list');
+        certList.innerHTML = '';
+        certifications.forEach(cert => {
+            certList.appendChild(createAndSetText('li', cert));
+        });
+        
+        const trainingList = document.getElementById('trainings-list');
+        trainingList.innerHTML = '';
+        trainings.forEach(training => {
+            trainingList.appendChild(createAndSetText('li', training));
+        });
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('about-content').innerHTML = '<p style="color: #ff4c4c;">Failed to load content. Please try again later.</p>';
+      }
+    }
+    loadData();
+
+
+    // --- CONTACT POPUP LOGIC ---
+    const contactBtn = document.getElementById('contact-btn');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const closePopupBtn = document.getElementById('close-popup');
+    const popupForm = document.getElementById('popup-form');
+    const popupMessage = document.getElementById('popup-message');
+
+    contactBtn.addEventListener('click', () => {
+        popupOverlay.style.display = 'flex';
+        document.getElementById('popup-name').focus();
+    });
+    closePopupBtn.addEventListener('click', () => {
+        popupOverlay.style.display = 'none';
+    });
+    popupOverlay.addEventListener('click', (e) => {
+        if (e.target === popupOverlay) {
+            popupOverlay.style.display = 'none';
+        }
+    });
+
+    popupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitButton = popupForm.querySelector('button');
+        submitButton.disabled = true;
+        popupMessage.textContent = 'Menyimpan...';
+        popupMessage.style.color = '#ccc';
+
+        const formData = {
+            name: document.getElementById('popup-name').value,
+            email: document.getElementById('popup-email').value,
+            company: document.getElementById('popup-company').value,
+            message: document.getElementById('popup-message-text').value
+        };
+
+        try {
+            const res = await fetch('/contact-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Server error');
+
+            popupMessage.textContent = 'Permintaan Anda telah disimpan. Terima kasih!';
+            popupMessage.style.color = '#63ed7a';
+            popupForm.reset();
+            setTimeout(() => { 
+                popupOverlay.style.display = 'none'; 
+                popupMessage.textContent = ''; 
+            }, 3000);
+
+        } catch (error) {
+            popupMessage.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+            popupMessage.style.color = '#ff4c4c';
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+  </script>
+</body>
+</html>
