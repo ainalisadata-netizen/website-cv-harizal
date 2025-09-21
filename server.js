@@ -1,4 +1,4 @@
-// server.js (Final Version with Complete Schemas)
+// server.js (Final Version with Route Fix for React App)
 
 require('dotenv').config();
 const express = require('express');
@@ -27,7 +27,7 @@ mongoose.connect(mongoUri)
     process.exit(1);
   });
 
-// --- SCHEMA & MODEL (Lengkap dan Detail) ---
+// --- SCHEMA & MODEL ---
 const AdminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true }
@@ -82,8 +82,7 @@ const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: "To
 // =======================================================
 // === RUTE API (Ditempatkan sebelum static files) ===
 // =======================================================
-
-// ENDPOINT PUBLIK
+// ... (semua endpoint API Anda: /get-data, /login, dll. tetap sama) ...
 app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
         let data = await CvData.findOne({ uniqueId: "main_cv" }).lean();
@@ -96,7 +95,6 @@ app.get('/get-data', apiLimiter, async (req, res, next) => {
         return res.json(data);
     } catch (error) { next(error); }
 });
-
 app.post('/contact-request', apiLimiter, async (req, res, next) => {
     try {
         const { name, email, company, message } = req.body;
@@ -108,8 +106,6 @@ app.post('/contact-request', apiLimiter, async (req, res, next) => {
         return res.json({ success: true, message: 'Permintaan berhasil disimpan.' });
     } catch (error) { next(error); }
 });
-
-// ENDPOINT ADMIN
 app.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -124,7 +120,6 @@ app.post('/login', loginLimiter, async (req, res, next) => {
         res.json({ success: true, message: 'Login successful', token: token });
     } catch (error) { next(error); }
 });
-
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -135,7 +130,6 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
-
 app.post('/update-data', authenticateToken, async (req, res, next) => {
     try {
         const newData = req.body;
@@ -143,14 +137,12 @@ app.post('/update-data', authenticateToken, async (req, res, next) => {
         return res.json({ success: true, message: 'Data updated successfully' });
     } catch (error) { next(error); }
 });
-
 app.get('/get-requests', authenticateToken, async (req, res, next) => {
     try {
         const requests = await CvRequest.find().sort({ createdAt: -1 });
         res.json(requests);
     } catch (error) { next(error); }
 });
-
 app.delete('/delete-request/:id', authenticateToken, async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -165,13 +157,17 @@ app.delete('/delete-request/:id', authenticateToken, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 
-// --- MENYAJIKAN FILE STATIS (SETELAH API) ---
-app.use(express.static(path.join(__dirname, 'public')));
 
-// --- RUTE CATCH-ALL (HARUS PALING BAWAH) ---
+// --- MENYAJIKAN APLIKASI REACT ---
+// Arahkan server untuk menggunakan folder 'build' dari React sebagai sumber file statis
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
+
+// Untuk semua permintaan yang tidak cocok dengan API di atas, kirimkan file index.html dari React
+// Ini akan menangani rute seperti / dan /admin.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });
+
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {
