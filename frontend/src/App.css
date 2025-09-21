@@ -1,141 +1,34 @@
-// src/App.js (Final dengan Animasi Partikel Interaktif)
-import React, { useEffect, useState, useCallback } from 'react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
+/* src/App.css */
 
-import './App.css';
-import './index.css';
-
-import Hero from './components/Hero';
-import About from './components/About';
-import WorkExperience from './components/WorkExperience';
-import Projects from './components/Projects';
-import Education from './components/Education';
-import Certifications from './components/Certifications';
-import ContactSection from './components/ContactSection';
-import ContactForm from './components/ContactForm';
-import useDataFetcher from './hooks/useDataFetcher';
-
-function App() {
-  const { data, loading, error } = useDataFetcher('/get-data');
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  useEffect(() => {
-    AOS.init({ once: true, duration: 1000 });
-  }, []);
-
-  const particlesInit = useCallback(async (engine) => {
-    await loadFull(engine);
-  }, []);
-
-  const particleOptions = {
-      background: {
-          color: {
-              value: "#121212"
-          }
-      },
-      fpsLimit: 120,
-      interactivity: {
-          events: {
-              onClick: {
-                  enable: true,
-                  mode: "push"
-              },
-              onHover: {
-                  enable: true,
-                  mode: "repulse"
-              }
-          },
-          modes: {
-              push: {
-                  quantity: 4
-              },
-              repulse: {
-                  distance: 200,
-                  duration: 0.4
-              }
-          }
-      },
-      particles: {
-          color: {
-              value: ["#2EB67D", "#ECB22E", "#E01E5B", "#36C5F0"]
-          },
-          links: {
-              color: "#ffffff",
-              distance: 150,
-              enable: true,
-              opacity: 0.2,
-              width: 1
-          },
-          move: {
-              direction: "none",
-              enable: true,
-              outModes: {
-                  default: "bounce"
-              },
-              random: false,
-              speed: 2,
-              straight: false
-          },
-          number: {
-              density: {
-                  enable: true,
-              },
-              value: 80
-          },
-          opacity: {
-              value: 0.8
-          },
-          shape: {
-              type: "circle"
-          },
-          size: {
-              value: { min: 1, max: 5 }
-          }
-      },
-      detectRetina: true
-  };
-
-  if (loading) return <div className="loading-screen">Loading portfolio...</div>;
-  if (error) return <div className="error-screen">Error: {error.message}</div>;
-  if (!data) return null;
-
-  const { personalInfo, workExperience, projects, education, certifications, trainings } = data;
-
-  return (
-    <>
-      <Particles
-          id="tsparticles"
-          init={particlesInit}
-          options={particleOptions}
-      />
-
-      <Hero
-        name={personalInfo?.name || 'Nama Tidak Tersedia'}
-        title={personalInfo?.title || 'Judul Tidak Tersedia'}
-        onContactClick={() => setIsPopupOpen(true)}
-      />
-
-      <main>
-        <About
-          aboutP1="Experienced IT professional with a strong background in consulting, network infrastructure, and security projects. Passionate about leveraging technology to solve complex problems and improve organizational security."
-          address={personalInfo?.address || 'Tidak Tersedia'}
-        />
-        <WorkExperience experiences={workExperience || []} />
-        <Projects projects={projects || {}} />
-        <Education education={education || []} />
-        <Certifications
-          certifications={certifications || []}
-          trainings={trainings || []}
-        />
-        <ContactSection email={personalInfo?.email || 'harizalbanget@gmail.com'} />
-      </main>
-
-      <ContactForm isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
-    </>
-  );
+/* Container untuk kanvas animasi */
+.liquid-ether-canvas-container {
+  position: fixed; /* Tetap di posisi yang sama saat di-scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; /* Setinggi layar */
+  z-index: -1; /* Posisikan di paling belakang */
+  background-color: #121212; /* Warna fallback jika kanvas gagal dimuat */
 }
 
-export default App;
+/* Wrapper untuk semua konten utama */
+.content-wrapper {
+  position: relative; /* Pastikan konten berada di atas kanvas */
+  z-index: 1;
+  padding: 0 2rem; /* Beri sedikit jarak di sisi kiri dan kanan */
+  max-width: 1200px; /* Batasi lebar maksimal konten */
+  margin: 0 auto; /* Pusatkan konten */
+}
+
+/* Style tambahan untuk memastikan semuanya terlihat baik */
+.app-container {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden; /* Hindari scroll horizontal */
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem; /* Jarak antar seksi (About, Work, dll.) */
+}
