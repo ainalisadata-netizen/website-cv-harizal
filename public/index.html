@@ -5,20 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Harizal - IT Consultant & Cyber Security Analyst</title>
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
   <style>
     /* Reset & base */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background-color: #121212;
       color: #eee;
       scroll-behavior: smooth;
-      line-height: 1.6;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-      min-height: 100vh;
     }
     /* particles.js container */
     #particles-js {
@@ -28,340 +25,90 @@
       background: radial-gradient(circle at center, #1e1e1e, #121212);
     }
     a {
-      color: #00ffff;
-      text-decoration: none;
+      color: #1e90ff; text-decoration: none;
       transition: color 0.3s ease;
       word-break: break-word;
-      text-shadow: 0 0 5px #00ffffaa;
     }
     a:hover, a:focus {
-      text-decoration: underline;
-      outline: none;
-      color: #00ffffcc;
-      text-shadow: 0 0 10px #00ffffee;
+      text-decoration: underline; outline: none;
+      color: #63b3ed;
     }
     section {
-      padding: 80px 20px;
-      max-width: 900px;
-      margin: 0 auto 60px;
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(10px);
-      background: rgba(10, 10, 20, 0.6);
-      border-radius: 15px;
-      box-shadow: 0 0 30px #00ffff44;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-      transform-style: preserve-3d;
-      perspective: 1000px;
-      cursor: default;
+      padding: 80px 20px; max-width: 900px;
+      margin: 0 auto; position: relative; z-index: 1;
     }
-    section:hover {
-      box-shadow: 0 0 50px #00ffffaa;
-      transform: translateZ(20px);
-    }
-    h1, h2, h3 {
-      margin-bottom: 0.5em;
-      font-weight: 700;
-      line-height: 1.1;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 10px #00ffffaa;
-    }
+    h1, h2, h3 { margin-bottom: 0.5em; font-weight: 700; line-height: 1.1; }
     h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
     h2 {
       font-size: clamp(1.5rem, 3vw, 2rem);
-      border-bottom: 2px solid #00ffff;
-      padding-bottom: 0.3em;
-      margin-bottom: 1em;
+      border-bottom: 2px solid #1e90ff;
+      padding-bottom: 0.3em; margin-bottom: 1em;
     }
-    p {
-      font-size: clamp(1rem, 2vw, 1.15rem);
-      margin-bottom: 1.2em;
-      color: #cceeffdd;
-      text-shadow: 0 0 3px #00ffff55;
-      letter-spacing: 0.02em;
-    }
-    ul {
-      list-style: none;
-      padding-left: 0;
-      margin-bottom: 1em;
-    }
-    li {
-      margin-bottom: 0.6em;
-      line-height: 1.5;
-      padding-left: 1.2em;
-      position: relative;
-      font-weight: 600;
-      color: #a0f0ffcc;
-    }
-    li::before {
-      content: "▹";
-      position: absolute;
-      left: 0;
-      color: #00ffff;
-      text-shadow: 0 0 5px #00ffffaa;
-    }
+    p { font-size: clamp(1rem, 2vw, 1.1rem); margin-bottom: 1em; color: #ddd; word-wrap: break-word; }
+    ul { list-style: none; padding-left: 0; margin-bottom: 1em; }
+    li { margin-bottom: 0.5em; line-height: 1.4; }
     /* Hero Section */
-    #hero {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 0 20px;
-      perspective: 1000px;
-    }
-    #hero-content {
-      max-width: 600px;
-      background: rgba(0, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 40px 30px;
-      box-shadow: 0 0 40px #00ffffaa;
-      backdrop-filter: blur(15px);
-      transform-style: preserve-3d;
-      transition: transform 0.3s ease;
-      cursor: default;
-    }
-    #hero-content:hover {
-      transform: rotateY(10deg) rotateX(5deg) scale(1.05);
-      box-shadow: 0 0 70px #00ffffee;
-    }
-    #hero h1 {
-      color: #00ffff;
-      text-shadow: 0 0 20px #00ffffcc;
-      margin-bottom: 0.3em;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-    }
-    #hero h3 {
-      font-weight: 400;
-      font-size: clamp(1rem, 2vw, 1.5rem);
-      margin-bottom: 2em;
-      color: #a0f0ffcc;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 10px #00ffff88;
-    }
+    #hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+    #hero-content { max-width: 600px; }
+    #hero h1 { color: #1e90ff; text-shadow: 0 0 10px #1e90ff; margin-bottom: 0.3em; }
+    #hero h3 { font-weight: 400; font-size: clamp(1rem, 2vw, 1.5rem); margin-bottom: 1.5em; color: #ccc; }
     #hero button {
-      background: rgba(0, 255, 255, 0.3);
-      border: 2px solid #00ffff;
-      padding: 15px 40px;
-      font-size: 1.2rem;
-      color: #00ffff;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      transition: background-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
-      user-select: none;
-      box-shadow: 0 0 15px #00ffffaa;
-      backdrop-filter: blur(10px);
+      background-color: #1e90ff; border: none; padding: 15px 30px;
+      font-size: 1.1rem; color: white; border-radius: 30px;
+      cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; user-select: none;
     }
-    #hero button:hover, #hero button:focus {
-      background-color: #00ffff;
-      color: #121212;
-      box-shadow: 0 0 30px #00ffffee;
-      transform: scale(1.1);
-      outline: none;
-    }
+    #hero button:hover, #hero button:focus { background-color: #0f5bb5; transform: translateY(-2px); outline: none; }
     /* Sections Content */
     .section-content {
-      background: rgba(10, 10, 20, 0.7);
-      border-radius: 20px;
-      padding: 40px 35px;
-      box-shadow: 0 0 40px #00ffff88;
-      border: 1px solid #00ffff44;
-      transition: box-shadow 0.3s ease;
-      backdrop-filter: blur(15px);
+      background-color: rgba(30, 30, 30, 0.9); border-radius: 10px;
+      padding: 30px; box-shadow: 0 0 20px rgba(30, 144, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .section-content:hover {
-      box-shadow: 0 0 60px #00ffffcc;
-    }
-    .item {
-      margin-bottom: 2em;
-      padding-bottom: 1.5em;
-      border-bottom: 1px solid #004d4d;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border-radius: 10px;
-      padding-left: 1em;
-      cursor: default;
-      background: rgba(0, 255, 255, 0.05);
-      box-shadow: 0 0 10px transparent;
-    }
-    .item:hover {
-      transform: translateX(10px);
-      box-shadow: 0 0 20px #00ffffbb;
-      background: rgba(0, 255, 255, 0.15);
-    }
-    .item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    .item-title {
-      font-weight: 900;
-      font-size: 1.3rem;
-      color: #00ffff;
-      word-break: break-word;
-      text-shadow: 0 0 10px #00ffffbb;
-    }
-    .item-subtitle {
-      font-style: italic;
-      color: #88e0e0cc;
-      margin-bottom: 0.5em;
-      word-break: break-word;
-      font-weight: 600;
-    }
-    .project-category {
-      margin-bottom: 2em;
-      border-left: 3px solid #00ffff;
-      padding-left: 1em;
-      transition: box-shadow 0.3s ease;
-      border-radius: 10px;
-      background: rgba(0, 255, 255, 0.05);
-      box-shadow: 0 0 10px transparent;
-    }
-    .project-category:hover {
-      box-shadow: 0 0 25px #00ffffbb;
-      background: rgba(0, 255, 255, 0.15);
-    }
-    .project-category h4 {
-      color: #00ffff;
-      margin-bottom: 0.7em;
-      font-weight: 900;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 10px #00ffffbb;
-    }
+    .item { margin-bottom: 1.5em; padding-bottom: 1.5em; border-bottom: 1px solid #333; }
+    .item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .item-title { font-weight: 700; font-size: 1.2rem; color: #1e90ff; word-break: break-word; }
+    .item-subtitle { font-style: italic; color: #aaa; margin-bottom: 0.3em; word-break: break-word; }
+    .project-category { margin-bottom: 1.5em; }
+    .project-category h4 { color: #1e90ff; margin-bottom: 0.5em; }
     /* Contact Popup */
     #popup-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.85);
-      z-index: 10000; display: none;
-      justify-content: center; align-items: center;
-      padding: 20px;
-      backdrop-filter: blur(10px);
-      transition: opacity 0.4s ease;
-    }
-    #popup-overlay.show {
-      display: flex;
-      opacity: 1;
+      background-color: rgba(0, 0, 0, 0.7); z-index: 1000; display: none;
+      justify-content: center; align-items: center; padding: 20px;
     }
     #popup-form-container {
-      background: rgba(0, 0, 0, 0.9);
-      padding: 40px 35px;
-      border-radius: 25px;
-      width: 100%; max-width: 520px;
-      box-shadow: 0 0 60px #00ffffcc;
-      position: relative;
-      color: #00ffff;
-      font-family: 'Orbitron', sans-serif;
-      transform: translateY(-30px);
-      opacity: 0;
-      transition: transform 0.4s ease, opacity 0.4s ease;
+      background-color: #1e1e1e; padding: 30px; border-radius: 10px;
+      width: 100%; max-width: 500px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+      position: relative; color: #eee;
     }
-    #popup-overlay.show #popup-form-container {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    #popup-form-container h2 {
-      border-bottom: none;
-      text-align: center;
-      margin-bottom: 1.5em;
-      font-size: 2rem;
-      letter-spacing: 0.1em;
-      text-shadow: 0 0 15px #00ffffcc;
-    }
-    #popup-form label {
-      display: block;
-      margin-bottom: 8px;
-      color: #00ffffcc;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
+    #popup-form-container h2 { border-bottom: none; text-align: center; margin-bottom: 1em; font-size: 1.5rem; }
+    #popup-form label { display: block; margin-bottom: 5px; color: #ccc; font-weight: 600; }
     #popup-form input, #popup-form textarea {
-      width: 100%;
-      padding: 14px 15px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      border: 1px solid #00ffff88;
-      background-color: rgba(0, 255, 255, 0.1);
-      color: #00ffffee;
-      font-size: 1.1rem;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: inset 0 0 10px #00ffff44;
-      resize: vertical;
-      min-height: 100px;
+      width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px;
+      border: 1px solid #444; background-color: #2a2a2a; color: #eee;
+      font-size: 1rem; font-family: inherit; transition: border-color 0.3s ease;
     }
-    #popup-form input:focus, #popup-form textarea:focus {
-      border-color: #00ffff;
-      box-shadow: 0 0 15px #00ffffcc;
-      outline: none;
-      background-color: rgba(0, 255, 255, 0.15);
-    }
+    #popup-form input:focus, #popup-form textarea:focus { border-color: #1e90ff; outline: none; }
+    #popup-form textarea { resize: vertical; min-height: 100px; }
     #popup-form button {
-      width: 100%;
-      padding: 16px;
-      border-radius: 30px;
-      background: linear-gradient(45deg, #00ffff, #00aaff);
-      color: #121212;
-      border: none;
-      cursor: pointer;
-      font-size: 1.3rem;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      box-shadow: 0 0 30px #00ffffcc;
-      transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
-      user-select: none;
+      width: 100%; padding: 12px; border-radius: 5px; background-color: #1e90ff;
+      color: white; border: none; cursor: pointer; font-size: 1rem; font-weight: 700;
+      user-select: none; transition: background-color 0.3s ease;
     }
-    #popup-form button:hover, #popup-form button:focus {
-      background: linear-gradient(45deg, #00aaff, #00ffff);
-      box-shadow: 0 0 50px #00ffffee;
-      transform: scale(1.05);
-      outline: none;
-    }
+    #popup-form button:hover, #popup-form button:focus { background-color: #0f5bb5; outline: none; }
     #close-popup {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 2rem;
-      color: #00ffffaa;
-      cursor: pointer;
-      border: none;
-      background: none;
-      user-select: none;
+      position: absolute; top: 15px; right: 15px; font-size: 1.5rem; color: #aaa;
+      cursor: pointer; border: none; background: none; user-select: none;
       transition: color 0.3s ease;
     }
-    #close-popup:hover, #close-popup:focus {
-      color: #00ffffee;
-      outline: none;
-    }
-    #popup-message {
-      text-align: center;
-      margin-top: 15px;
-      font-weight: 700;
-      min-height: 1.5em;
-      color: #00ffcc;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 10px #00ffccbb;
-    }
+    #close-popup:hover, #close-popup:focus { color: #fff; outline: none; }
+    #popup-message { text-align: center; margin-top: 10px; font-weight: 700; min-height: 1.5em; word-wrap: break-word; }
     /* Responsive */
     @media (max-width: 600px) {
-      #hero h1 { font-size: 2.8rem; }
-      #hero h3 { font-size: 1.2rem; }
-      section {
-        padding: 50px 15px;
-        border-radius: 15px;
-      }
-      #popup-form-container {
-        padding: 30px 25px;
-        border-radius: 20px;
-      }
-      #popup-form button {
-        font-size: 1.1rem;
-        padding: 14px;
-      }
+      #hero h1 { font-size: 2.5rem; }
+      #hero h3 { font-size: 1.1rem; }
+      section { padding: 60px 15px; }
+      #popup-form-container { padding: 20px; }
     }
   </style>
 </head>
@@ -370,35 +117,35 @@
   <div id="particles-js" aria-hidden="true"></div>
 
   <header id="hero" role="banner" aria-label="Hero section with name and title">
-    <div id="hero-content" data-aos="fade-up" data-aos-duration="1500" tabindex="0">
+    <div id="hero-content" data-aos="fade-up" data-aos-duration="1500">
       <h1 id="name">Harizal</h1>
-      <h3 id="title">IT Consultant | Cyber Security Analyst | Game Developer</h3>
+      <h3 id="title">IT Consultant | Cyber Security Analyst</h3>
       <button id="contact-btn" aria-haspopup="dialog" aria-controls="popup-overlay" aria-expanded="false">Hubungi Kami</button>
     </div>
   </header>
 
   <main>
-    <section id="about" data-aos="fade-up" data-aos-duration="1000" tabindex="-1" aria-label="About me section">
+    <section id="about" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
       <h2>About Me</h2>
       <div class="section-content" id="about-content" aria-live="polite"></div>
     </section>
 
-    <section id="work-experience" data-aos="fade-up" data-aos-duration="1000" tabindex="-1" aria-label="Work experience section">
+    <section id="work-experience" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
       <h2>Work Experience</h2>
       <div class="section-content" id="work-experience-content" aria-live="polite"></div>
     </section>
 
-    <section id="projects" data-aos="fade-up" data-aos-duration="1000" tabindex="-1" aria-label="Projects section">
+    <section id="projects" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
       <h2>Projects</h2>
       <div class="section-content" id="projects-content" aria-live="polite"></div>
     </section>
 
-    <section id="education" data-aos="fade-up" data-aos-duration="1000" tabindex="-1" aria-label="Education section">
+    <section id="education" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
       <h2>Education</h2>
       <div class="section-content" id="education-content" aria-live="polite"></div>
     </section>
 
-    <section id="certifications" data-aos="fade-up" data-aos-duration="1000" tabindex="-1" aria-label="Certifications and training section">
+    <section id="certifications" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
       <h2>Certifications & Training</h2>
       <div class="section-content" id="certifications-content">
         <h3>Certifications</h3>
@@ -408,7 +155,7 @@
       </div>
     </section>
 
-    <section id="contact" data-aos="fade-up" data-aos-duration="1000" tabindex="-1" aria-label="Contact section">
+    <section id="contact" data-aos="fade-up" data-aos-duration="1000" tabindex="-1">
       <h2>Contact</h2>
       <div class="section-content">
         <p>Email: <a href="mailto:harizalbanget@gmail.com" id="email-link" rel="nofollow noopener noreferrer"></a></p>
@@ -425,4 +172,195 @@
         <button id="close-popup" aria-label="Close contact form">&times;</button>
         <h2 id="popup-title">Minta Curriculum Vitae</h2>
         <form id="popup-form" novalidate>
-            <label for
+            <label for="popup-name">Nama Anda:</label>
+            <input type="text" id="popup-name" name="name" required autocomplete="name" aria-required="true" />
+            
+            <label for="popup-email">Email Anda:</label>
+            <input type="email" id="popup-email" name="email" required autocomplete="email" aria-required="true" />
+            
+            <label for="popup-company">Perusahaan/Institusi:</label>
+            <input type="text" id="popup-company" name="company" autocomplete="organization" />
+            
+            <label for="popup-message-text">Pesan:</label>
+            <textarea id="popup-message-text" name="message" required aria-required="true"></textarea>
+            
+            <button type="submit">Kirim Permintaan</button>
+        </form>
+        <div id="popup-message" role="alert" aria-live="assertive"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  
+  <script>
+    AOS.init({ once: true });
+
+    // --- INISIALISASI PARTICLES.JS ---
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 60, density: { enable: true, value_area: 700 } },
+        color: { value: "#1e90ff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.4, random: false },
+        size: { value: 3, random: true },
+        line_linked: { enable: true, distance: 140, color: "#1e90ff", opacity: 0.3, width: 1 },
+        move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+        modes: { repulse: { distance: 120, duration: 0.4 }, push: { particles_nb: 4 } }
+      },
+      retina_detect: true
+    });
+
+
+    // --- LOAD DATA FROM SERVER ---
+    async function loadData() {
+      try {
+        const res = await fetch('/get-data');
+        if (!res.ok) throw new Error(`Server responded with status: ${res.status}`);
+        const data = await res.json();
+        
+        const personalInfo = data.personalInfo || {};
+        const workExperience = Array.isArray(data.workExperience) ? data.workExperience : [];
+        const projects = data.projects || {};
+        const education = Array.isArray(data.education) ? data.education : [];
+        const certifications = Array.isArray(data.certifications) ? data.certifications : [];
+        const trainings = Array.isArray(data.trainings) ? data.trainings : [];
+
+        document.getElementById('name').textContent = personalInfo.name || 'Nama Tidak Tersedia';
+        document.getElementById('title').textContent = personalInfo.title || 'Judul Tidak Tersedia';
+        const emailLink = document.getElementById('email-link');
+        emailLink.textContent = personalInfo.email || '';
+        emailLink.href = personalInfo.email ? `mailto:${personalInfo.email}` : '#';
+        
+        const aboutContent = document.getElementById('about-content');
+        aboutContent.innerHTML = `<p>Experienced IT professional with a strong background in consulting, network infrastructure, and security projects. Passionate about leveraging technology to solve complex problems and improve organizational security.</p><p><strong>Address:</strong> ${personalInfo.address || 'Tidak Tersedia'}</p>`;
+
+        const workContainer = document.getElementById('work-experience-content');
+        workContainer.innerHTML = '';
+        workExperience.forEach(exp => {
+          const div = document.createElement('div');
+          div.classList.add('item');
+          div.innerHTML = `<div class="item-title">${exp.position || ''}</div><div class="item-subtitle">${exp.company || ''} | ${exp.period || ''}</div>`;
+          workContainer.appendChild(div);
+        });
+
+        const projectsContainer = document.getElementById('projects-content');
+        projectsContainer.innerHTML = '';
+        const createProjectCategory = (title, items) => {
+            if (!Array.isArray(items) || items.length === 0) return document.createDocumentFragment();
+            const catDiv = document.createElement('div');
+            catDiv.classList.add('project-category');
+            const h4 = document.createElement('h4');
+            h4.textContent = title;
+            catDiv.appendChild(h4);
+            const ul = document.createElement('ul');
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                ul.appendChild(li);
+            });
+            catDiv.appendChild(ul);
+            return catDiv;
+        };
+        projectsContainer.appendChild(createProjectCategory('IT', projects.it));
+        projectsContainer.appendChild(createProjectCategory('Networking & Infrastructure', projects.network_infrastructure));
+        projectsContainer.appendChild(createProjectCategory('Security', projects.security));
+
+        const educationContainer = document.getElementById('education-content');
+        educationContainer.innerHTML = '';
+        education.forEach(edu => {
+            const div = document.createElement('div');
+            div.classList.add('item');
+            div.innerHTML = `<div class="item-title">${edu.degree || ''}</div><div class="item-subtitle">${edu.institution || ''} | ${edu.status || ''}</div>`;
+            educationContainer.appendChild(div);
+        });
+
+        const certList = document.getElementById('certifications-list');
+        certList.innerHTML = '';
+        certifications.forEach(cert => {
+            const li = document.createElement('li');
+            li.textContent = cert;
+            certList.appendChild(li);
+        });
+        
+        const trainingList = document.getElementById('trainings-list');
+        trainingList.innerHTML = '';
+        trainings.forEach(training => {
+            const li = document.createElement('li');
+            li.textContent = training;
+            trainingList.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('about-content').innerHTML = '<p style="color: #ff4c4c;">Failed to load content. Please try again later.</p>';
+      }
+    }
+    loadData();
+
+
+    // --- CONTACT POPUP LOGIC ---
+    const contactBtn = document.getElementById('contact-btn');
+    const popupOverlay = document.getElementById('popup-overlay');
+    const closePopupBtn = document.getElementById('close-popup');
+    const popupForm = document.getElementById('popup-form');
+    const popupMessage = document.getElementById('popup-message');
+
+    contactBtn.addEventListener('click', () => {
+        popupOverlay.style.display = 'flex';
+        document.getElementById('popup-name').focus();
+    });
+    closePopupBtn.addEventListener('click', () => {
+        popupOverlay.style.display = 'none';
+    });
+    popupOverlay.addEventListener('click', (e) => {
+        if (e.target === popupOverlay) {
+            popupOverlay.style.display = 'none';
+        }
+    });
+
+    popupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitButton = popupForm.querySelector('button');
+        submitButton.disabled = true;
+        popupMessage.textContent = 'Mengirim...';
+        popupMessage.style.color = '#ccc';
+
+        const formData = {
+            name: document.getElementById('popup-name').value,
+            email: document.getElementById('popup-email').value,
+            company: document.getElementById('popup-company').value,
+            message: document.getElementById('popup-message-text').value
+        };
+
+        try {
+            const res = await fetch('/contact-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message || 'Server error');
+
+            popupMessage.textContent = 'Permintaan Anda telah terkirim. Terima kasih!';
+            popupMessage.style.color = '#63ed7a';
+            popupForm.reset();
+            setTimeout(() => { 
+                popupOverlay.style.display = 'none'; 
+                popupMessage.textContent = ''; 
+            }, 3000);
+
+        } catch (error) {
+            popupMessage.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+            popupMessage.style.color = '#ff4c4c';
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+  </script>
+</body>
+</html>
