@@ -1,4 +1,4 @@
-// server.js (Final Version with Blackbox AI Recommendations)
+// server.js (Final Version with Proxy Fix)
 
 require('dotenv').config();
 const express = require('express');
@@ -12,13 +12,15 @@ const validator = require('validator');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
+app.set('trust proxy', 1); // <-- PERBAIKAN DITAMBAHKAN DI SINI
+
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- KONEKSI KE DATABASE MONGODB (dengan opsi rekomendasi) ---
+// --- KONEKSI KE DATABASE MONGODB ---
 const mongoUri = process.env.MONGO_CONNECTION_STRING;
 mongoose.connect(mongoUri)
   .then(() => console.log('Successfully connected to MongoDB Atlas.'))
@@ -27,7 +29,7 @@ mongoose.connect(mongoUri)
     process.exit(1);
   });
 
-// --- SCHEMA & MODEL (dengan validasi detail) ---
+// --- SCHEMA & MODEL ---
 const AdminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true }
@@ -42,36 +44,22 @@ const cvSchema = new mongoose.Schema({
     address: { type: String, default: '' },
     email: { type: String, default: '' },
   },
-  education: [{
-    degree: String,
-    institution: String,
-    status: String,
-  }],
-  workExperience: [{
-    period: String,
-    company: String,
-    position: String,
-  }],
+  education: [{ degree: String, institution: String, status: String }],
+  workExperience: [{ period: String, company: String, position: String }],
   certifications: [String],
   trainings: [String],
-  projects: {
-    it: [String],
-    network_infrastructure: [String],
-    security: [String],
-  }
+  projects: { it: [String], network_infrastructure: [String], security: [String] }
 });
 const CvData = mongoose.model('CvData', cvSchema);
 
-// --- FUNGSI MEMBUAT ADMIN PERTAMA KALI (lebih aman) ---
+// --- FUNGSI MEMBUAT ADMIN PERTAMA KALI ---
 async function createFirstAdmin() {
     const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'harizalbanget@gmail.com';
     const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
-
     if (!adminPassword) {
-      console.warn('WARNING: DEFAULT_ADMIN_PASSWORD is not set in .env. Admin user cannot be created.');
+      console.warn('WARNING: DEFAULT_ADMIN_PASSWORD is not set. Admin user cannot be created.');
       return;
     }
-
     try {
         const existingAdmin = await Admin.findOne({ email: adminEmail });
         if (!existingAdmin) {
@@ -88,7 +76,7 @@ async function createFirstAdmin() {
 }
 createFirstAdmin();
 
-// --- TRANSPORTER EMAIL (lebih aman) ---
+// --- TRANSPORTER EMAIL ---
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT, 10),
@@ -99,7 +87,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// --- RATE LIMITER (untuk keamanan) ---
+// --- RATE LIMITER ---
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, max: 100, 
     standardHeaders: true, legacyHeaders: false,
@@ -117,12 +105,11 @@ const escapeHtml = (unsafe) => {
     })[m]);
 };
 
-
 // =======================================================
-// === SEMUA RUTE API HARUS DITEMPATKAN DI ATAS CATCH-ALL ===
+// === RUTE API ===
 // =======================================================
 
-// === ENDPOINT PUBLIK ===
+// ENDPOINT PUBLIK
 app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
         let data = await CvData.findOne({ uniqueId: "main_cv" }).lean();
@@ -158,8 +145,7 @@ app.post('/contact-request', apiLimiter, async (req, res, next) => {
     }
 });
 
-
-// === ENDPOINT ADMIN ===
+// ENDPOINT ADMIN
 app.post('/login', loginLimiter, async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -185,7 +171,6 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) return res.status(401).json({ success: false, message: 'Access token is missing or invalid' });
-
     jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) {
             console.error('JWT Verification Error:', err.message);
@@ -210,20 +195,4 @@ app.post('/update-data', authenticateToken, async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-});
-
-// --- RUTE CATCH-ALL (HARUS PALING BAWAH) ---
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// --- GLOBAL ERROR HANDLER ---
-app.use((err, req, res, next) => {
-  console.error('Unhandled Error:', err);
-  res.status(500).json({ success: false, message: 'An unexpected error occurred.' });
-});
-
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
 });
