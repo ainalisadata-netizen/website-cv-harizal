@@ -1,4 +1,4 @@
-// server.js (Final Version with Correct Route Order)
+// server.js (Final Version with Complete Schemas)
 
 require('dotenv').config();
 const express = require('express');
@@ -27,18 +27,52 @@ mongoose.connect(mongoUri)
     process.exit(1);
   });
 
-// --- SCHEMA & MODEL ---
-const AdminSchema = new mongoose.Schema({ /* ... (tidak ada perubahan) ... */ });
+// --- SCHEMA & MODEL (Lengkap dan Detail) ---
+const AdminSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { type: String, required: true }
+});
 const Admin = mongoose.model('Admin', AdminSchema);
 
-const cvSchema = new mongoose.Schema({ /* ... (tidak ada perubahan) ... */ });
+const cvSchema = new mongoose.Schema({
+  uniqueId: { type: String, default: "main_cv", unique: true },
+  personalInfo: { name: String, title: String, address: String, email: String },
+  education: [{ degree: String, institution: String, status: String }],
+  workExperience: [{ period: String, company: String, position: String }],
+  certifications: [String], trainings: [String],
+  projects: { it: [String], network_infrastructure: [String], security: [String] }
+});
 const CvData = mongoose.model('CvData', cvSchema);
 
-const CvRequestSchema = new mongoose.Schema({ /* ... (tidak ada perubahan) ... */ });
+const CvRequestSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    company: { type: String },
+    message: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
 const CvRequest = mongoose.model('CvRequest', CvRequestSchema);
 
 // --- FUNGSI MEMBUAT ADMIN PERTAMA KALI ---
-async function createFirstAdmin() { /* ... (tidak ada perubahan) ... */ }
+async function createFirstAdmin() {
+    const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || 'harizalbanget@gmail.com';
+    const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.warn('WARNING: DEFAULT_ADMIN_PASSWORD is not set. Admin user cannot be created.');
+      return;
+    }
+    try {
+        const existingAdmin = await Admin.findOne({ email: adminEmail });
+        if (!existingAdmin) {
+            const hashedPassword = await bcrypt.hash(adminPassword, 12);
+            const newAdmin = new Admin({ email: adminEmail, password: hashedPassword });
+            await newAdmin.save();
+            console.log('Admin user created successfully.');
+        } else {
+            console.log('Admin user already exists.');
+        }
+    } catch (error) { console.error('Error creating admin user:', error); }
+}
 createFirstAdmin();
 
 // --- RATE LIMITER ---
@@ -49,7 +83,7 @@ const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: "To
 // === RUTE API (Ditempatkan sebelum static files) ===
 // =======================================================
 
-// === ENDPOINT PUBLIK ===
+// ENDPOINT PUBLIK
 app.get('/get-data', apiLimiter, async (req, res, next) => {
     try {
         let data = await CvData.findOne({ uniqueId: "main_cv" }).lean();
@@ -64,31 +98,72 @@ app.get('/get-data', apiLimiter, async (req, res, next) => {
 });
 
 app.post('/contact-request', apiLimiter, async (req, res, next) => {
-    // ... (Logika endpoint ini tidak berubah)
+    try {
+        const { name, email, company, message } = req.body;
+        if (!name || !email || !message || !validator.isEmail(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid input provided.' });
+        }
+        const newRequest = new CvRequest({ name, email, company, message });
+        await newRequest.save();
+        return res.json({ success: true, message: 'Permintaan berhasil disimpan.' });
+    } catch (error) { next(error); }
 });
 
-
-// === ENDPOINT ADMIN ===
+// ENDPOINT ADMIN
 app.post('/login', loginLimiter, async (req, res, next) => {
-    // ... (Logika endpoint ini tidak berubah)
+    try {
+        const { email, password } = req.body;
+        if (!email || !password || !validator.isEmail(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid input' });
+        }
+        const admin = await Admin.findOne({ email: email.toLowerCase() });
+        if (!admin || !(await bcrypt.compare(password, admin.password))) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+        const token = jwt.sign({ adminId: admin._id }, JWT_SECRET, { expiresIn: '1h' });
+        res.json({ success: true, message: 'Login successful', token: token });
+    } catch (error) { next(error); }
 });
 
 const authenticateToken = (req, res, next) => {
-    // ... (Logika middleware ini tidak berubah)
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ success: false, message: 'Token missing' });
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ success: false, message: 'Token is not valid' });
+        req.user = user;
+        next();
+    });
 };
 
 app.post('/update-data', authenticateToken, async (req, res, next) => {
-    // ... (Logika endpoint ini tidak berubah)
+    try {
+        const newData = req.body;
+        await CvData.findOneAndUpdate({ uniqueId: "main_cv" }, newData, { upsert: true, new: true, runValidators: true });
+        return res.json({ success: true, message: 'Data updated successfully' });
+    } catch (error) { next(error); }
 });
 
 app.get('/get-requests', authenticateToken, async (req, res, next) => {
-    // ... (Logika endpoint ini tidak berubah)
+    try {
+        const requests = await CvRequest.find().sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (error) { next(error); }
 });
 
 app.delete('/delete-request/:id', authenticateToken, async (req, res, next) => {
-    // ... (Logika endpoint ini tidak berubah)
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ID format' });
+        }
+        const result = await CvRequest.findByIdAndDelete(id);
+        if (!result) {
+            return res.status(404).json({ success: false, message: 'Request not found' });
+        }
+        res.json({ success: true, message: 'Request deleted successfully' });
+    } catch (error) { next(error); }
 });
-
 
 // --- MENYAJIKAN FILE STATIS (SETELAH API) ---
 app.use(express.static(path.join(__dirname, 'public')));
