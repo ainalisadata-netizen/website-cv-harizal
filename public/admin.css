@@ -1,4 +1,143 @@
-/* Tambahkan di akhir file admin.css */
+/* admin.css (Versi Lengkap dan Final) */
+
+body {
+  background-color: #121212;
+  color: #eee;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 20px 40px;
+}
+
+h1 {
+  color: #1e90ff;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h2 {
+    color: #eee;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-top: 20px;
+}
+
+form {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(30, 144, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background-color: #2a2a2a;
+  color: #eee;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+textarea {
+  min-height: 80px;
+}
+
+button {
+  background-color: #1e90ff;
+  border: none;
+  padding: 12px 25px;
+  color: white;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+}
+
+button:hover {
+  background-color: #0f5bb5;
+}
+
+#message {
+  text-align: center;
+  font-weight: 600;
+  margin-top: 15px;
+  min-height: 1.5em;
+}
+
+fieldset {
+  border: 1px solid #1e90ff;
+  border-radius: 8px;
+  padding: 15px 20px 20px;
+  margin-bottom: 25px;
+}
+
+legend {
+  font-weight: 700;
+  color: #1e90ff;
+  padding: 0 10px;
+}
+
+.array-item {
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  position: relative;
+  background-color: #222;
+}
+
+.array-item button.remove-item {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #b22222;
+  border: none;
+  color: white;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  line-height: 22px;
+  font-size: 16px;
+  padding: 0;
+  text-align: center;
+}
+
+.array-item button.remove-item:hover {
+  background: #ff4c4c;
+}
+
+.add-item-btn {
+  background-color: #1e90ff;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  display: inline-block;
+  font-size: 0.9rem;
+  padding: 6px 15px;
+  border-radius: 20px;
+}
+
+.add-item-btn:hover {
+  background-color: #0f5bb5;
+}
 
 /* Navigasi Admin */
 .admin-nav {
@@ -26,6 +165,7 @@
 .admin-nav button#logout-btn {
     background-color: #b22222;
     color: white;
+    font-size: 1rem;
 }
 
 /* Tabel Inbox */
@@ -33,12 +173,14 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    table-layout: fixed;
 }
 #inbox-section th, #inbox-section td {
     padding: 12px;
     border: 1px solid #333;
     text-align: left;
     vertical-align: top;
+    word-wrap: break-word;
 }
 #inbox-section th {
     background-color: #2a2a2a;
@@ -50,6 +192,9 @@
     display: block;
     white-space: pre-wrap;
     word-wrap: break-word;
+    background-color: #2a2a2a;
+    padding: 8px;
+    border-radius: 4px;
 }
 .delete-btn {
     background-color: #b22222;
